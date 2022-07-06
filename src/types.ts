@@ -509,3 +509,10 @@ export interface ShowClass {
   state: string;
   parent: string;
 }
+
+export interface CopyToBroadcastable {
+  kind:          'Subtitle'|'Material'|'Audio'|'Extra';
+  broadcastable: string;
+  key:           string;
+  bucket:        string;
+}

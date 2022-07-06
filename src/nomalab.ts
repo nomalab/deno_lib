@@ -1,4 +1,4 @@
-import { Job, Path, Show } from "./types.ts";
+import { CopyToBroadcastable, Job, Path, Show } from "./types.ts";
 
 export class Nomalab {
   #context: string;
@@ -33,6 +33,13 @@ export class Nomalab {
     return this.#handleResponse<Job>(
       response,
       `ERROR - Can't find show with id ${jobUuid}.`,
+    );
+  }
+  async s3Upload(payload: CopyToBroadcastable): Promise<void> {
+    const response = await fetch(this.#createPostRequest("aws/copy", payload));
+    return this.#handleResponse<void>(
+      response,
+      `Error - Can't make a s3 copy with payload.${payload}`,
     );
   }
   async #handleResponse<Type>(
