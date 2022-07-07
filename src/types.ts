@@ -505,14 +505,14 @@ export interface ShowClass {
   organization: string;
   accepted: boolean;
   commandInfoXML: null;
-  kind: string;
+  kind: "Delivery" | "Master";
   state: string;
   parent: string;
 }
 
 export interface CopyToBroadcastable {
-  kind:          'Subtitle'|'Material'|'Audio'|'Extra';
+  kind: "Subtitle" | "Material" | "Audio" | "Extra";
   broadcastable: string;
-  key:           string;
-  bucket:        string;
+  key: string;
+  bucket: string;
 }

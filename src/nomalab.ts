@@ -1,4 +1,4 @@
-import { CopyToBroadcastable, Job, Path, Show } from "./types.ts";
+import { CopyToBroadcastable, Job, Path, Show, ShowClass } from "./types.ts";
 
 export class Nomalab {
   #context: string;
@@ -40,6 +40,22 @@ export class Nomalab {
     return this.#handleResponse<void>(
       response,
       `Error - Can't make a s3 copy with payload.${payload}`,
+    );
+  }
+
+  async deliverWithoutTranscoding(
+    broadcastableId: string,
+    targetOrgId: string,
+  ): Promise<ShowClass> {
+    const response = await fetch(
+      this.#createPostRequest(
+        `broadcastables/${broadcastableId}/copyToOrganization`,
+        { targetOrg: targetOrgId },
+      ),
+    );
+    return this.#handleResponse<ShowClass>(
+      response,
+      `Error - Can't deliver without transcoding to org id <${targetOrgId}>`,
     );
   }
   async #handleResponse<Type>(
