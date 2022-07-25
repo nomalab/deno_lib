@@ -506,7 +506,7 @@ export interface ShowClass {
   accepted: boolean;
   commandInfoXML: null;
   kind: "Delivery" | "Master";
-  state: string;
+  state: "active" | "archived";
   parent: string;
 }
 
@@ -515,4 +515,118 @@ export interface CopyToBroadcastable {
   broadcastable: string;
   key: string;
   bucket: string;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  createdAt: string;
+  qcMasterTestPlan: string;
+  qcMasterReportTemplate: string;
+  destination: null | string;
+  downloadFileName: null | string;
+  enableCreationEmail: boolean;
+  enableVideoReadyEmail: boolean;
+  enableUploadSuccessEmail: boolean;
+  enableAutoAccept: boolean;
+  enableAutoReject: boolean;
+  broadcaster: null | string;
+  manualDelivery: boolean;
+  allowDeliveryWithoutTranscoding: boolean;
+  replication: boolean;
+  logo: null | string;
+  formats: Format[];
+  subtitleFormats: Format[];
+}
+
+export interface Format {
+  id: string;
+  name: string;
+}
+
+export interface Node {
+  node: NodeClass;
+  events: Array<Array<EventClass | EventEnum>>;
+}
+
+export interface EventClass {
+  id: string;
+  show: string;
+  title: string;
+  subtitle: null;
+  timestamp: string;
+  kind?: Kind;
+  fileId?: string;
+  fileName?: string;
+  formatName?: string;
+  nbWarning?: number;
+  error?: null;
+  mxfIn: null | string;
+  mxfOut: null | string;
+  mxfVersion: MXFVersion | null;
+  subtitlesFileName: null | string;
+  targetOrganization: null | string;
+  transcodeKind?: TranscodeKind;
+  result?: Result | null;
+  fileBucket?: string;
+  fileKey?: string;
+  source?: Source;
+}
+
+export enum Kind {
+  Create = "Create",
+  Finish = "Finish",
+  Request = "Request",
+}
+
+export enum MXFVersion {
+  AsMaster = "AsMaster",
+  Vd = "VD",
+  Vo = "VO",
+}
+
+export interface Result {
+  nbErrors: number;
+  nbWarnings: number;
+}
+
+export interface Source {
+  id: string;
+  name: string;
+  email: string;
+  organization: string;
+  organizationName: string;
+  avatar: string;
+}
+
+export enum TranscodeKind {
+  Copy = "copy",
+  Deliverable = "deliverable",
+  ProxyLowRes = "proxy_low_res",
+  ProxySubtitle = "proxy_subtitle",
+}
+
+export enum NodeKind {
+  Season = "Season",
+  Collection = "Collection",
+  Episode = "Episode",
+  Unitary = "Unitary",
+}
+
+export enum EventEnum {
+  Ingest = "Ingest",
+  Lifecycle = "Lifecycle",
+  QualityCheck = "QualityCheck",
+  Transcode = "Transcode",
+}
+
+export interface NodeClass {
+  id: string;
+  creator: string;
+  createdAt: string;
+  name: string;
+  organization: string;
+  parent: string;
+  kind: NodeKind;
+  state: string;
 }
