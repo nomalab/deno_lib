@@ -1,4 +1,15 @@
-import { CopyToBroadcastable, Job, Organization, Path, Show, ShowClass, Node, NodeClass } from "./types.ts";
+import {
+  CopyToBroadcastable,
+  Job,
+  Node,
+  NodeClass,
+  Organization,
+  Path,
+  Show,
+  ShowClass,
+} from "./types.ts";
+import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
+
 export class AlreadyPresentDeliverable extends Error {
   constructor(msg: string) {
     super(msg);
@@ -23,7 +34,46 @@ export class Nomalab {
       `ERROR - Can't find show with id ${showUuid}.`,
     );
   }
-  async getChildren(nodeUuid:string): Promise<NodeClass[]>{
+  async getRoots(organizationId: string): Promise<NodeClass[]> {
+    const response = await this.#requestWithSwitch(
+      organizationId,
+      "hierarchy",
+    );
+    return this.#handleResponse<NodeClass[]>(
+      response,
+      `ERROR - Can't find root.`,
+    );
+  }
+  async #requestWithSwitch(
+    organizationId: string,
+    partialUrl: string,
+    method?: "GET" | "POST",
+    body?: unknown,
+  ): Promise<Response> {
+    return await fetch(
+      this.#createPostRequest(`users/switch`, { organization: organizationId }),
+    ).then((response) => {
+      if (response.status != 200) {
+        this.#throwError(`Can't switch to org ${organizationId}`, response);
+      }
+      const headers = new Headers();
+      const setCookie = response.headers.get("set-cookie");
+      if (setCookie != null) {
+        headers.append("Cookie", setCookie);
+      }
+      const cookie = mod.getCookies(headers);
+      let req = undefined;
+      if (method == "POST") {
+        req = this.#createPostRequest(partialUrl, body ?? {});
+      } else {
+        req = this.#createRequest(partialUrl);
+      }
+      req.headers.append("Cookie", `sessionJwt=${cookie["sessionJwt"]}`);
+      return fetch(req);
+    });
+  }
+
+  async getChildren(nodeUuid: string): Promise<NodeClass[]> {
     const response = await fetch(
       this.#createRequest(`hierarchy/${nodeUuid}/children`),
     );
@@ -68,6 +118,15 @@ export class Nomalab {
       `ERROR - Can't get organizations.`,
     );
   }
+  async getOrganization(organizationId: string): Promise<Organization> {
+    const organisation = (await this.getOrganizations()).filter((org) => {
+      return org.id == organizationId;
+    });
+    if (organisation.length == 0) {
+      return Promise.reject(`Org ${organizationId} not found`);
+    }
+    return Promise.resolve(organisation[0]);
+  }
   async getJob(jobUuid: string): Promise<Job> {
     const response = await fetch(
       this.#createRequest(`jobs/${jobUuid}`),
@@ -85,14 +144,32 @@ export class Nomalab {
     );
   }
 
- async accept(showId: string): Promise<ShowClass> {
-    const response = await fetch(this.#createPostRequest(`shows/${showId}/accept`, {}));
+  async accept(showId: string): Promise<ShowClass> {
+    const response = await fetch(
+      this.#createPostRequest(`shows/${showId}/accept`, {}),
+    );
     return this.#handleResponse<ShowClass>(
       response,
       `Error - Can't accept show. ${showId}`,
     );
   }
-
+  async acceptAndDeliver(
+    broadcastableId: string,
+    showId: string,
+  ): Promise<void> {
+    await this.accept(showId).then(async() => {
+      const response = await fetch(
+        this.#createPostRequest(
+          `broadcastables/${broadcastableId}/delivery`,
+          {},
+        ),
+      );
+      return this.#handleResponse<void>(
+        response,
+        `Error - Can't accept and deliver show. [${showId}]`,
+      );
+    });
+  }
   async deliverWithoutTranscoding(
     broadcastableId: string,
     targetOrgId: string,
@@ -150,7 +227,10 @@ export class Nomalab {
       {
         method: method ?? "GET",
         headers: myHeaders,
-        body: (bodyJsonObject == undefined) ? null : JSON.stringify(bodyJsonObject),
+        body: (bodyJsonObject == undefined)
+          ? null
+          : JSON.stringify(bodyJsonObject),
+        credentials: "include",
       },
     );
     return request;
