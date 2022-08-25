@@ -89,6 +89,61 @@ export interface Container {
   timecode: null;
 }
 
+export interface Deliveries {
+  shows:           Show[];
+  nodes:           DeliveryNode[];
+  formats:         DeliveriesFormat[];
+  subtitleFormats: SubtitleFormat[];
+}
+
+export interface DeliveriesFormat {
+  organizationId:                              string;
+  organizationName:                            string;
+  organizationAllowDeliveryWithoutTranscoding: boolean;
+  formats:                                     FormatElement[];
+}
+
+export interface FormatElement {
+  id:   string;
+  name: string;
+}
+
+export interface DeliveryNode {
+  showId: string;
+  id:     string;
+  name:   string;
+  parent: null | string;
+}
+
+export interface Subtitles {
+  subtitle: any[];
+}
+
+export enum ArchiveState {
+  Active = "active",
+  Archived = "archived",
+}
+
+export interface SubtitleFormat {
+  organizationId:   string;
+  organizationName: string;
+  subtitleFormats:  FormatElement[];
+}
+export interface DeliverPayload {
+  format:         string;
+  versionMapping: "VFVO"|"VF"|"VO";
+  timecodeOut:    string | null;
+  timecodeIn:     string | null;
+  subtitles:      DeliverSubtitle | null;
+  targetOrg:      string;
+  targetId:       null;
+}
+export interface DeliverSubtitle {
+  format: string | null;
+  id: string;
+  name: string | null;
+}
+
 export interface Delivery {
   id: string;
   title: string;
@@ -506,7 +561,7 @@ export interface ShowClass {
   accepted: boolean;
   commandInfoXML: null;
   kind: "Delivery" | "Master";
-  state: "active" | "archived";
+  state: ArchiveState;
   parent: string;
 }
 

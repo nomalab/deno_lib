@@ -1,5 +1,7 @@
 import {
   CopyToBroadcastable,
+  Deliveries,
+  DeliverPayload,
   Job,
   Node,
   NodeClass,
@@ -82,6 +84,17 @@ export class Nomalab {
       `ERROR - Can't find children with id ${nodeUuid}.`,
     );
   }
+
+  async getDeliveries(): Promise<Deliveries> {
+    const response = await fetch(
+      this.#createRequest(`shows/deliveries`),
+    );
+    return this.#handleResponse<Deliveries>(
+      response,
+      `ERROR - Can't get deliveries.`,
+    );
+  }
+
   async getNode(nodeUuid: string): Promise<Node> {
     const response = await fetch(
       this.#createRequest(`hierarchy/${nodeUuid}`),
@@ -153,11 +166,26 @@ export class Nomalab {
       `Error - Can't accept show. ${showId}`,
     );
   }
+  // Deliver with starting a transcode
+  async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
+    const response = await fetch(
+      this.#createPostRequest(
+        `broadcastables/${showId}/deliver`,
+        deliverPayload,
+      ),
+    );
+    return this.#handleResponse<void>(
+      response,
+      `Error - Can't deliver with payload.${deliverPayload}`,
+    );
+  }
+
+  // Accept the show and then trigger the upload (delivery bad naming tho)
   async acceptAndDeliver(
     broadcastableId: string,
     showId: string,
   ): Promise<void> {
-    await this.accept(showId).then(async() => {
+    await this.accept(showId).then(async () => {
       const response = await fetch(
         this.#createPostRequest(
           `broadcastables/${broadcastableId}/delivery`,
