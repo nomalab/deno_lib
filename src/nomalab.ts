@@ -2,10 +2,12 @@ import {
   CopyToBroadcastable,
   Deliveries,
   DeliverPayload,
+  Format,
   Job,
   Node,
   NodeClass,
   Organization,
+  OrganizationDeliverables,
   Path,
   Show,
   ShowClass,
@@ -131,6 +133,15 @@ export class Nomalab {
       `ERROR - Can't get organizations.`,
     );
   }
+  async getOrganizationsDeliverables(): Promise<OrganizationDeliverables[]> {
+    const response = await fetch(
+      this.#createRequest(`organizations/deliverables`),
+    );
+    return this.#handleResponse<OrganizationDeliverables[]>(
+      response,
+      `ERROR - Can't get organizations deliverables.`,
+    );
+  }
   async getOrganization(organizationId: string): Promise<Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.id == organizationId;
@@ -140,6 +151,17 @@ export class Nomalab {
     }
     return Promise.resolve(organisation[0]);
   }
+
+  async getFormats(organizationId: string): Promise<Format[]> {
+    const response = await fetch(
+      this.#createRequest(`organizations/${organizationId}/formats`)
+    );
+    return this.#handleResponse<Format[]>(
+      response,
+      `ERROR - Can't find format for given organization ${organizationId}`
+    );
+  }
+
   async getJob(jobUuid: string): Promise<Job> {
     const response = await fetch(
       this.#createRequest(`jobs/${jobUuid}`),

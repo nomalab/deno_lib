@@ -90,28 +90,28 @@ export interface Container {
 }
 
 export interface Deliveries {
-  shows:           Show[];
-  nodes:           DeliveryNode[];
-  formats:         DeliveriesFormat[];
+  shows: Show[];
+  nodes: DeliveryNode[];
+  formats: DeliveriesFormat[];
   subtitleFormats: SubtitleFormat[];
 }
 
 export interface DeliveriesFormat {
-  organizationId:                              string;
-  organizationName:                            string;
+  organizationId: string;
+  organizationName: string;
   organizationAllowDeliveryWithoutTranscoding: boolean;
-  formats:                                     FormatElement[];
+  formats: FormatElement[];
 }
 
 export interface FormatElement {
-  id:   string;
+  id: string;
   name: string;
 }
 
 export interface DeliveryNode {
   showId: string;
-  id:     string;
-  name:   string;
+  id: string;
+  name: string;
   parent: null | string;
 }
 
@@ -125,18 +125,18 @@ export enum ArchiveState {
 }
 
 export interface SubtitleFormat {
-  organizationId:   string;
+  organizationId: string;
   organizationName: string;
-  subtitleFormats:  FormatElement[];
+  subtitleFormats: FormatElement[];
 }
 export interface DeliverPayload {
-  format:         string;
-  versionMapping: "VFVO"|"VF"|"VO";
-  timecodeOut:    string | null;
-  timecodeIn:     string | null;
-  subtitles:      DeliverSubtitle | null;
-  targetOrg:      string;
-  targetId:       null;
+  format: string;
+  versionMapping: "VDVO" | "VD" | "VO";
+  timecodeOut: string | null;
+  timecodeIn: string | null;
+  subtitles: DeliverSubtitle | null;
+  targetOrg: string;
+  targetId: null;
 }
 export interface DeliverSubtitle {
   format: string | null;
@@ -684,4 +684,42 @@ export interface NodeClass {
   parent: string;
   kind: NodeKind;
   state: string;
+}
+
+export interface OrganizationDeliverables {
+  id: string;
+  name: string;
+  allowDeliveryWithoutTranscoding: boolean;
+}
+
+export interface Format {
+  id:                    string;
+  name:                  string;
+  specification:         string;
+  audioCodec:            string;
+  audioBitrate:          null;
+  videoBitrate:          string;
+  startTimecode:         string;
+  frameRate:             FrameRate;
+  noLoudness:            null;
+  loudnessRange:         null;
+  writeTimecode:         boolean;
+  noFrameRateConversion: boolean;
+  clipGamutLuma:         boolean;
+  encodeSubtitle:        boolean;
+  ffmpegArgs:            null;
+  audioArgs:             null;
+  bmxArgs:               null;
+  options:               null;
+  crop:                  null;
+  scale:                 null;
+  videoEdit:             null;
+  qcTestPlan:            string;
+  qcReportTemplate:      string;
+}
+
+export interface FrameRate {
+  id:          string;
+  numerator:   number;
+  denominator: number;
 }
