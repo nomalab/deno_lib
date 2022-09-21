@@ -5,6 +5,7 @@ import {
   Job,
   Node,
   NodeClass,
+  NodeKind,
   Organization,
   Path,
   Show,
@@ -36,6 +37,7 @@ export class Nomalab {
       `ERROR - Can't find show with id ${showUuid}.`,
     );
   }
+
   async getRoots(organizationId: string): Promise<NodeClass[]> {
     const response = await this.#requestWithSwitch(
       organizationId,
@@ -46,6 +48,20 @@ export class Nomalab {
       `ERROR - Can't find root.`,
     );
   }
+
+  async createHierarchy(name: string, kind: NodeKind, parent?: string): Promise<NodeClass> {
+    const response = await fetch(this.#createPostRequest('hierarchy', {
+      name,
+      parent,
+      kind
+    }));
+
+    return this.#handleResponse<NodeClass>(
+      response,
+      `ERROR - Can't create ${kind} ${name}.`,
+    );
+  }
+
   async #requestWithSwitch(
     organizationId: string,
     partialUrl: string,

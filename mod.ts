@@ -5,6 +5,7 @@ export type {
   DeliverPayload,
   Job,
   Node,
+  NodeKind,
   NodeClass,
   Organization,
   Path,
