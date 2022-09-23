@@ -230,6 +230,41 @@ export class Nomalab {
     );
   }
 
+  async getManifest(proxyId: string): Promise<Blob> {
+    const response = await fetch(
+      this.#createRequest(
+        `files/${proxyId}/manifest`,
+        undefined,
+        undefined,
+        "application/xml",
+      )
+    );
+    return this.#handleBlobResponse(
+      response,
+      `ERROR - Can't find manifest with proxyId ${proxyId}.`
+    );
+  }
+
+  #handleBlobResponse(
+    response: Response,
+    message: string,
+  ): Promise<Blob> {
+    if (!response.ok) {
+      if (response.status == 409) {
+        throw new AlreadyPresentDeliverable(
+          "Can't deliver because of an already present deliverable.",
+        );
+      } else {
+        this.#throwError(message, response);
+      }
+    }
+    // NOCONTENT
+    if (response.status == 204) {
+      return Promise.resolve({}) as Promise<Blob>;
+    } else {
+      return response.blob();
+    }
+  }
   #handleResponse<Type>(
     response: Response,
     message: string,
@@ -262,9 +297,10 @@ export class Nomalab {
     partialUrl: string,
     method = "GET",
     bodyJsonObject?: unknown,
+    contentType?: string,
   ): Request {
     const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Content-Type", contentType ?? "application/json");
     myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
