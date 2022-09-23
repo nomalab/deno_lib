@@ -9,6 +9,7 @@ import {
   Organization,
   Path,
   Show,
+  ShowKind,
   ShowClass,
 } from "./types.ts";
 import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
@@ -56,6 +57,18 @@ export class Nomalab {
     );
     if (!response.ok) this.#throwError(`ERROR - Can't create ${kind} ${name}.`, response);
     return response.json() as Promise<NodeClass>;
+  }
+
+  async createShow(nodeId: string, name: string, kind: ShowKind): Promise<ShowClass> {
+    const response = await fetch(this.#createPostRequest(`hierarchy/${nodeId}/shows`, {
+      name,
+      kind
+    }));
+
+    return this.#handleResponse<ShowClass>(
+      response,
+      `ERROR - Can't create show ${kind} ${name}.`,
+    );
   }
 
   async #requestWithSwitch(

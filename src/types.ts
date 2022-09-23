@@ -560,7 +560,7 @@ export interface ShowClass {
   organization: string;
   accepted: boolean;
   commandInfoXML: null;
-  kind: "Delivery" | "Master";
+  kind: ShowKind;
   state: ArchiveState;
   parent: string;
 }
@@ -666,6 +666,11 @@ export enum NodeKind {
   Collection = "Collection",
   Episode = "Episode",
   Unitary = "Unitary",
+}
+
+export enum ShowKind {
+  Delivery = "Delivery",
+  Master = "Master",
 }
 
 export enum EventEnum {

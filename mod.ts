@@ -10,6 +10,7 @@ export type {
   Organization,
   Path,
   Show,
+  ShowKind,
   ShowClass,
   Subtitle,
 } from "./src/types.ts";
