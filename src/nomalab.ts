@@ -49,12 +49,17 @@ export class Nomalab {
     );
   }
 
-  async createHierarchy(name: string, kind: NodeKind, parent?: string): Promise<NodeClass> {
-    const response = await fetch(this.#createPostRequest('hierarchy', {
-      name,
-      parent,
-      kind
-    }));
+  async createHierarchy(organizationId: string, name: string, kind: NodeKind, parent?: string): Promise<NodeClass> {
+    const response = await this.#requestWithSwitch(
+      organizationId,
+      "hierarchy",
+      "POST",
+      {
+        name,
+        parent,
+        kind
+      }
+    );
 
     return this.#handleResponse<NodeClass>(
       response,
