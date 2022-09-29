@@ -1,5 +1,6 @@
 export * from "./src/nomalab.ts";
 export type {
+  BroadcastableKind,
   Delivery,
   Deliveries,
   DeliverPayload,

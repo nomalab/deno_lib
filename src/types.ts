@@ -565,8 +565,15 @@ export interface ShowClass {
   parent: string;
 }
 
+export enum BroadcastableKind {
+  Subtitle = "Subtitle",
+  Material = "Material",
+  Audio = "Audio",
+  Extra = "Extra"
+}
+
 export interface CopyToBroadcastable {
-  kind: "Subtitle" | "Material" | "Audio" | "Extra";
+  kind: BroadcastableKind;
   broadcastable: string;
   key: string;
   bucket: string;
