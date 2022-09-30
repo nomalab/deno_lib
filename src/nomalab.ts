@@ -59,16 +59,18 @@ export class Nomalab {
     return response.json() as Promise<NodeClass>;
   }
 
-  async createShow(nodeId: string, name: string, kind: ShowKind): Promise<ShowClass> {
-    const response = await fetch(this.#createPostRequest(`hierarchy/${nodeId}/shows`, {
-      name,
-      kind
-    }));
+  async createShow(nodeId: string, name: string, kind: ShowKind): Promise<string> {
+    const response = await this.#fetch(`hierarchy/${nodeId}/shows`, {
+      method: "POST",
+      bodyJsonObject: {
+        name,
+        kind
+      }
+    });
 
-    return this.#handleResponse<ShowClass>(
-      response,
-      `ERROR - Can't create show ${kind} ${name}.`,
-    );
+    if (!response.ok) this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
+    const { id } = await response.json() as ShowClass;
+    return id;
   }
 
   async #requestWithSwitch(
@@ -140,7 +142,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - error when retrieving shows for node ${nodeUuid}.`, response);
     return response.json() as Promise<ShowClass[]>;
   }
-  
+
   async getPath(showUuid: string): Promise<Path[]> {
     const response = await this.#fetch(
       `admin/shows/path`,
@@ -152,13 +154,13 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't find show with id ${showUuid}.`, response);
     return response.json() as Promise<Path[]>;
   }
-  
+
   async getOrganizations(): Promise<Organization[]> {
     const response = await this.#fetch(`organizations`, {});
     if (!response.ok) this.#throwError(`ERROR - Can't get organizations.`, response);
     return response.json() as Promise<Organization[]>;
   }
-  
+
   async getOrganization(organizationId: string): Promise<Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.id == organizationId;
@@ -168,13 +170,13 @@ export class Nomalab {
     }
     return Promise.resolve(organisation[0]);
   }
-  
+
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
     return response.json() as Promise<Job>;
   }
-  
+
   async s3Upload(payload: CopyToBroadcastable): Promise<void> {
     const response = await this.#fetch(
       "aws/copy",
@@ -195,7 +197,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
     return response.json() as Promise<ShowClass>;
   }
-  
+
   // Deliver with starting a transcode
   async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
     const response = await this.#fetch(
@@ -240,7 +242,7 @@ export class Nomalab {
       return Promise.resolve();
     });
   }
-  
+
   async deliverWithoutTranscoding(
     broadcastableId: string,
     targetOrgId: string,
@@ -274,7 +276,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't find manifest with proxyId ${proxyId}.`, response);
     return response.blob() as Promise<Blob>;
   }
-  
+
   #throwError(message: string, response: Response): void {
     console.error(message);
     console.error(response);
