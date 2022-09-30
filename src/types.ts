@@ -560,13 +560,20 @@ export interface ShowClass {
   organization: string;
   accepted: boolean;
   commandInfoXML: null;
-  kind: "Delivery" | "Master";
+  kind: ShowKind;
   state: ArchiveState;
   parent: string;
 }
 
+export enum BroadcastableKind {
+  Subtitle = "Subtitle",
+  Material = "Material",
+  Audio = "Audio",
+  Extra = "Extra"
+}
+
 export interface CopyToBroadcastable {
-  kind: "Subtitle" | "Material" | "Audio" | "Extra";
+  kind: BroadcastableKind;
   broadcastable: string;
   key: string;
   bucket: string;
@@ -666,6 +673,11 @@ export enum NodeKind {
   Collection = "Collection",
   Episode = "Episode",
   Unitary = "Unitary",
+}
+
+export enum ShowKind {
+  Delivery = "Delivery",
+  Master = "Master",
 }
 
 export enum EventEnum {

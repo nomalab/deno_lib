@@ -9,6 +9,7 @@ import {
   Organization,
   Path,
   Show,
+  ShowKind,
   ShowClass,
 } from "./types.ts";
 import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
@@ -58,42 +59,52 @@ export class Nomalab {
     return response.json() as Promise<NodeClass>;
   }
 
+  async createShow(nodeId: string, name: string, kind: ShowKind): Promise<string> {
+    const response = await this.#fetch(`hierarchy/${nodeId}/shows`, {
+      method: "POST",
+      bodyJsonObject: {
+        name,
+        kind
+      }
+    });
+
+    if (!response.ok) this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
+    const { id } = await response.json() as ShowClass;
+    return id;
+  }
+
   async #requestWithSwitch(
     organizationId: string,
     partialUrl: string,
     method?: "GET" | "POST",
     body?: unknown,
   ): Promise<Response> {
-    return await this.#fetch(
+    const response = await this.#fetch(
       `users/switch`,
       {
         bodyJsonObject: { organization: organizationId },
         method: "POST"
-      })
-      .then(async (response) => {
-        if (response.status != 200) {
-          this.#throwError(`Can't switch to org ${organizationId}`, response);
-        }
-        const headers = new Headers();
-        const setCookie = response.headers.get("set-cookie");
-        if (setCookie != null) {
-          headers.append("Cookie", setCookie);
-        }
-        const cookie = mod.getCookies(headers);
-        let resp = undefined;
-        if (method == "POST") {
-          resp = await this.#fetch(
-            partialUrl,
-            {
-              bodyJsonObject: body ?? {},
-              method: "POST",
-              cookieHeader: cookie
-            });
-        } else {
-          resp = await this.#fetch(partialUrl, {});
-        }
-        return resp;
       });
+    if (response.status != 200) {
+      this.#throwError(`Can't switch to org ${organizationId}`, response);
+    }
+    const headers = new Headers();
+    const setCookie = response.headers.get("set-cookie");
+    if (setCookie != null) {
+      headers.append("Cookie", setCookie);
+    }
+    // To avoid leak since we don't use the body of the response
+    await response.body?.cancel();
+
+    const cookie = mod.getCookies(headers);
+    const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
+    return this.#fetch(
+      partialUrl, {
+        bodyJsonObject,
+        method,
+        cookieHeader: cookie
+      }
+    );
   }
 
   async getChildren(nodeUuid: string): Promise<NodeClass[]> {
@@ -127,7 +138,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - error when retrieving shows for node ${nodeUuid}.`, response);
     return response.json() as Promise<ShowClass[]>;
   }
-  
+
   async getPath(showUuid: string): Promise<Path[]> {
     const response = await this.#fetch(
       `admin/shows/path`,
@@ -139,13 +150,13 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't find show with id ${showUuid}.`, response);
     return response.json() as Promise<Path[]>;
   }
-  
+
   async getOrganizations(): Promise<Organization[]> {
     const response = await this.#fetch(`organizations`, {});
     if (!response.ok) this.#throwError(`ERROR - Can't get organizations.`, response);
     return response.json() as Promise<Organization[]>;
   }
-  
+
   async getOrganization(organizationId: string): Promise<Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.id == organizationId;
@@ -155,13 +166,13 @@ export class Nomalab {
     }
     return Promise.resolve(organisation[0]);
   }
-  
+
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
     return response.json() as Promise<Job>;
   }
-  
+
   async s3Upload(payload: CopyToBroadcastable): Promise<void> {
     const response = await this.#fetch(
       "aws/copy",
@@ -182,7 +193,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
     return response.json() as Promise<ShowClass>;
   }
-  
+
   // Deliver with starting a transcode
   async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
     const response = await this.#fetch(
@@ -227,7 +238,7 @@ export class Nomalab {
       return Promise.resolve();
     });
   }
-  
+
   async deliverWithoutTranscoding(
     broadcastableId: string,
     targetOrgId: string,
@@ -261,7 +272,7 @@ export class Nomalab {
     if (!response.ok) this.#throwError(`ERROR - Can't find manifest with proxyId ${proxyId}.`, response);
     return response.blob() as Promise<Blob>;
   }
-  
+
   #throwError(message: string, response: Response): void {
     console.error(message);
     console.error(response);
@@ -279,13 +290,15 @@ export class Nomalab {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
     myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
-    if (optionalArg.cookieHeader) { myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`) }
+    if (optionalArg.cookieHeader) {
+      myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`)
+    }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
-        body: (optionalArg.bodyJsonObject == undefined)
+        body: (optionalArg.bodyJsonObject === undefined)
           ? null
           : JSON.stringify(optionalArg.bodyJsonObject),
         credentials: "include",

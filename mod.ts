@@ -1,5 +1,6 @@
 export * from "./src/nomalab.ts";
 export type {
+  BroadcastableKind,
   Delivery,
   Deliveries,
   DeliverPayload,
@@ -10,6 +11,7 @@ export type {
   Organization,
   Path,
   Show,
+  ShowKind,
   ShowClass,
   Subtitle,
 } from "./src/types.ts";
