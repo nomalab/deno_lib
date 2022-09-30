@@ -105,7 +105,9 @@ export class Nomalab {
               cookieHeader: cookie
             });
         } else {
-          resp = await this.#fetch(partialUrl, {});
+          resp = await this.#fetch(partialUrl, {
+            cookieHeader: cookie
+          });
         }
         return resp;
       });
@@ -294,7 +296,9 @@ export class Nomalab {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
     myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
-    if (optionalArg.cookieHeader) { myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`) }
+    if (optionalArg.cookieHeader) {
+      myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`)
+    }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {
