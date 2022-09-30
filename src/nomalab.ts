@@ -79,38 +79,32 @@ export class Nomalab {
     method?: "GET" | "POST",
     body?: unknown,
   ): Promise<Response> {
-    return await this.#fetch(
+    const response = await this.#fetch(
       `users/switch`,
       {
         bodyJsonObject: { organization: organizationId },
         method: "POST"
-      })
-      .then(async (response) => {
-        if (response.status != 200) {
-          this.#throwError(`Can't switch to org ${organizationId}`, response);
-        }
-        const headers = new Headers();
-        const setCookie = response.headers.get("set-cookie");
-        if (setCookie != null) {
-          headers.append("Cookie", setCookie);
-        }
-        const cookie = mod.getCookies(headers);
-        let resp = undefined;
-        if (method == "POST") {
-          resp = await this.#fetch(
-            partialUrl,
-            {
-              bodyJsonObject: body ?? {},
-              method: "POST",
-              cookieHeader: cookie
-            });
-        } else {
-          resp = await this.#fetch(partialUrl, {
-            cookieHeader: cookie
-          });
-        }
-        return resp;
       });
+    if (response.status != 200) {
+      this.#throwError(`Can't switch to org ${organizationId}`, response);
+    }
+    const headers = new Headers();
+    const setCookie = response.headers.get("set-cookie");
+    if (setCookie != null) {
+      headers.append("Cookie", setCookie);
+    }
+    // To avoid leak since we don't use the body of the response
+    await response.body?.cancel();
+
+    const cookie = mod.getCookies(headers);
+    const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
+    return this.#fetch(
+      partialUrl, {
+        bodyJsonObject,
+        method,
+        cookieHeader: cookie
+      }
+    );
   }
 
   async getChildren(nodeUuid: string): Promise<NodeClass[]> {
@@ -304,7 +298,7 @@ export class Nomalab {
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
-        body: (optionalArg.bodyJsonObject == undefined)
+        body: (optionalArg.bodyJsonObject === undefined)
           ? null
           : JSON.stringify(optionalArg.bodyJsonObject),
         credentials: "include",
