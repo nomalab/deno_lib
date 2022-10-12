@@ -65,17 +65,19 @@ export interface Broadcastable {
 
 export interface Files {
   material: Material;
-  audios: any[];
+  audios: Material[];
   subtitles: Subtitle[];
 }
 
-export interface Material {
-  file: ReportPDFClass;
+export interface FileWrapper {
+  file : FileClass;
+}
+export interface Material extends FileWrapper {
   container: Container;
   streams: Array<Array<PurpleStream | string>>;
   proxies: Proxies;
-  reportXml: ReportPDFClass;
-  reportPdf: ReportPDFClass;
+  reportXml: FileClass;
+  reportPdf: FileClass;
   deliveries: Delivery[];
   segments: Segment[];
 }
@@ -168,7 +170,7 @@ export enum Phase {
   Waiting = "Waiting",
 }
 
-export interface ReportPDFClass {
+export interface FileClass {
   state: string;
   stateExpireAt: null;
   id: string;
@@ -415,7 +417,7 @@ export interface ProgramLoudnessEBU {
 }
 
 export interface Proxies {
-  lowRes: ReportPDFClass;
+  lowRes: FileClass;
   hiRes: null;
 }
 
@@ -476,8 +478,7 @@ export interface PurpleStream {
   typeVersion?: string;
 }
 
-export interface Subtitle {
-  file: ReportPDFClass;
+export interface Subtitle extends FileWrapper {
   container: null;
   streams: Array<Array<FluffyStream | string>>;
   proxies: Proxies;
