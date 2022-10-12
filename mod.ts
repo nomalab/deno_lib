@@ -5,6 +5,8 @@ export type {
   Deliveries,
   DeliverPayload,
   Job,
+  Material,
+  FileWrapper,
   Node,
   NodeKind,
   NodeClass,
