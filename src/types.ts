@@ -493,8 +493,8 @@ export interface FluffyStream {
   index: number;
   codecName: null;
   codecLongName: null;
-  version: null;
-  typeVersion: null;
+  version?: string;
+  typeVersion: string;
   frameRateNumerator: number;
   frameRateDenominator: number;
   startTimecode: string;
