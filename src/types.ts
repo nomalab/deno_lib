@@ -576,6 +576,7 @@ export enum BroadcastableKind {
 export interface CopyToBroadcastable {
   kind: BroadcastableKind;
   broadcastable: string;
+  destRole: string | undefined;
   key: string;
   bucket: string;
 }
