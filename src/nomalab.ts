@@ -218,7 +218,7 @@ export class Nomalab {
     }
     return Promise.resolve(organisation[0]);
   }
-  
+
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) {
@@ -228,19 +228,22 @@ export class Nomalab {
   }
 
   async s3Upload(payload: CopyToBroadcastable): Promise<void> {
+    const url = payload.destRole ? "aws/copyFromExt" : "aws/copy";
     const response = await this.#fetch(
-      "aws/copy",
+      url,
       {
         bodyJsonObject: payload,
         method: "POST",
       },
     );
+
     if (!response.ok) {
       this.#throwError(
-        `ERROR - Can't make a s3 copy with payload.${JSON.stringify(payload)}`,
-        response,
+        `ERROR - Can't make a s3 copy with payload.${JSON.stringify(payload)} on url ${url}.`,
+        response
       );
     }
+
     return Promise.resolve();
   }
 
