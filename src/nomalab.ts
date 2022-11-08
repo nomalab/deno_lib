@@ -9,8 +9,8 @@ import {
   Organization,
   Path,
   Show,
-  ShowKind,
   ShowClass,
+  ShowKind,
 } from "./types.ts";
 import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
 
@@ -31,7 +31,12 @@ export class Nomalab {
 
   async getShow(showUuid: string): Promise<Show> {
     const response = await this.#fetch(`shows/${showUuid}`, {});
-    if (!response.ok) this.#throwError(`ERROR - Can't find show with id ${showUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find show with id ${showUuid}.`,
+        response,
+      );
+    }
     return response.json() as Promise<Show>;
   }
 
@@ -44,7 +49,12 @@ export class Nomalab {
     return response.json() as Promise<NodeClass[]>;
   }
 
-  async createHierarchy(organizationId: string, name: string, kind: NodeKind, parent?: string): Promise<NodeClass> {
+  async createHierarchy(
+    organizationId: string,
+    name: string,
+    kind: NodeKind,
+    parent?: string,
+  ): Promise<NodeClass> {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
@@ -52,23 +62,31 @@ export class Nomalab {
       {
         name,
         parent,
-        kind
-      }
+        kind,
+      },
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't create ${kind} ${name}.`, response);
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't create ${kind} ${name}.`, response);
+    }
     return response.json() as Promise<NodeClass>;
   }
 
-  async createShow(nodeId: string, name: string, kind: ShowKind): Promise<string> {
+  async createShow(
+    nodeId: string,
+    name: string,
+    kind: ShowKind,
+  ): Promise<string> {
     const response = await this.#fetch(`hierarchy/${nodeId}/shows`, {
       method: "POST",
       bodyJsonObject: {
         name,
-        kind
-      }
+        kind,
+      },
     });
 
-    if (!response.ok) this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
+    }
     const { id } = await response.json() as ShowClass;
     return id;
   }
@@ -83,8 +101,9 @@ export class Nomalab {
       `users/switch`,
       {
         bodyJsonObject: { organization: organizationId },
-        method: "POST"
-      });
+        method: "POST",
+      },
+    );
     if (response.status != 200) {
       this.#throwError(`Can't switch to org ${organizationId}`, response);
     }
@@ -99,17 +118,23 @@ export class Nomalab {
     const cookie = mod.getCookies(headers);
     const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
     return this.#fetch(
-      partialUrl, {
+      partialUrl,
+      {
         bodyJsonObject,
         method,
-        cookieHeader: cookie
-      }
+        cookieHeader: cookie,
+      },
     );
   }
 
   async getChildren(nodeUuid: string): Promise<NodeClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/children`, {});
-    if (!response.ok) this.#throwError(`ERROR - Can't find children with id ${nodeUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find children with id ${nodeUuid}.`,
+        response,
+      );
+    }
     return response.json() as Promise<NodeClass[]>;
   }
 
@@ -129,13 +154,23 @@ export class Nomalab {
 
   async getNode(nodeUuid: string): Promise<Node> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}`, {});
-    if (!response.ok) this.#throwError(`ERROR - Can't find node with id ${nodeUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find node with id ${nodeUuid}.`,
+        response,
+      );
+    }
     return response.json() as Promise<Node>;
   }
 
   async getShowsForNode(nodeUuid: string): Promise<ShowClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/shows`, {});
-    if (!response.ok) this.#throwError(`ERROR - error when retrieving shows for node ${nodeUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - error when retrieving shows for node ${nodeUuid}.`,
+        response,
+      );
+    }
     return response.json() as Promise<ShowClass[]>;
   }
 
@@ -144,16 +179,23 @@ export class Nomalab {
       `admin/shows/path`,
       {
         bodyJsonObject: { showIds: [showUuid] },
-        method: "POST"
-      }
+        method: "POST",
+      },
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't find show with id ${showUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find show with id ${showUuid}.`,
+        response,
+      );
+    }
     return response.json() as Promise<Path[]>;
   }
 
   async getOrganizations(): Promise<Organization[]> {
     const response = await this.#fetch(`organizations`, {});
-    if (!response.ok) this.#throwError(`ERROR - Can't get organizations.`, response);
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't get organizations.`, response);
+    }
     return response.json() as Promise<Organization[]>;
   }
 
@@ -169,7 +211,9 @@ export class Nomalab {
 
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
-    if (!response.ok) this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
+    }
     return response.json() as Promise<Job>;
   }
 
@@ -178,19 +222,26 @@ export class Nomalab {
       "aws/copy",
       {
         bodyJsonObject: payload,
-        method: "POST"
-      }
+        method: "POST",
+      },
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't make a s3 copy with payload.${JSON.stringify(payload)}`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't make a s3 copy with payload.${JSON.stringify(payload)}`,
+        response,
+      );
+    }
     return Promise.resolve();
   }
 
   async accept(showId: string): Promise<ShowClass> {
     const response = await this.#fetch(
       `shows/${showId}/accept`,
-      { method: "POST" }
+      { method: "POST" },
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
+    }
     return response.json() as Promise<ShowClass>;
   }
 
@@ -201,7 +252,7 @@ export class Nomalab {
       {
         bodyJsonObject: deliverPayload,
         method: "POST",
-      }
+      },
     );
     if (!response.ok) {
       if (response.status == 409) {
@@ -209,7 +260,31 @@ export class Nomalab {
           "Can't deliver because of an already present deliverable.",
         );
       } else {
-        this.#throwError(`ERROR - Can't deliver with payload.${deliverPayload}`, response);
+        this.#throwError(
+          `ERROR - Can't deliver with payload.${deliverPayload}`,
+          response,
+        );
+      }
+    }
+    return Promise.resolve() as Promise<void>;
+  }
+
+  async triggerUpload(broadcastableId: string) {
+    const response = await this.#fetch(
+      `broadcastables/${broadcastableId}/delivery`,
+      { method: "POST", bodyJsonObject: {} },
+    );
+    console.log(response.headers);
+    if (!response.ok) {
+      if (response.status == 409) {
+        throw new AlreadyPresentDeliverable(
+          "Can't deliver because of an already present deliverable.",
+        );
+      } else {
+        this.#throwError(
+          `ERROR - Can't accept and deliver show. [${broadcastableId}]`,
+          response,
+        );
       }
     }
     return Promise.resolve() as Promise<void>;
@@ -225,14 +300,17 @@ export class Nomalab {
         `broadcastables/${broadcastableId}/delivery`,
         { method: "POST", bodyJsonObject: {} },
       );
-      console.log(response.headers)
+      console.log(response.headers);
       if (!response.ok) {
         if (response.status == 409) {
           throw new AlreadyPresentDeliverable(
             "Can't deliver because of an already present deliverable.",
           );
         } else {
-          this.#throwError(`ERROR - Can't accept and deliver show. [${showId}]`, response);
+          this.#throwError(
+            `ERROR - Can't accept and deliver show. [${showId}]`,
+            response,
+          );
         }
       }
       return Promise.resolve();
@@ -247,7 +325,7 @@ export class Nomalab {
       `broadcastables/${broadcastableId}/copyToOrganization`,
       {
         bodyJsonObject: { targetOrg: targetOrgId },
-        method: "POST"
+        method: "POST",
       },
     );
     if (!response.ok) {
@@ -256,7 +334,10 @@ export class Nomalab {
           "Can't deliver because of an already present deliverable.",
         );
       } else {
-        this.#throwError(`ERROR - Can't deliver without transcoding to org id <${targetOrgId}>`, response);
+        this.#throwError(
+          `ERROR - Can't deliver without transcoding to org id <${targetOrgId}>`,
+          response,
+        );
       }
     }
     return response.json() as Promise<ShowClass>;
@@ -266,10 +347,15 @@ export class Nomalab {
     const response = await this.#fetch(
       `files/${proxyId}/manifest`,
       {
-        contentType: "application/xml"
-      }
+        contentType: "application/xml",
+      },
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't find manifest with proxyId ${proxyId}.`, response);
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find manifest with proxyId ${proxyId}.`,
+        response,
+      );
+    }
     return response.blob() as Promise<Blob>;
   }
 
@@ -281,17 +367,23 @@ export class Nomalab {
   #fetch(
     partialUrl: string,
     optionalArg: {
-      method?: string,
-      bodyJsonObject?: unknown,
-      contentType?: string,
-      cookieHeader?: Record<string, string>,
+      method?: string;
+      bodyJsonObject?: unknown;
+      contentType?: string;
+      cookieHeader?: Record<string, string>;
     },
   ): Promise<Response> {
     const myHeaders = new Headers();
-    myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
+    myHeaders.append(
+      "Content-Type",
+      optionalArg.contentType ?? "application/json",
+    );
     myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
     if (optionalArg.cookieHeader) {
-      myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`)
+      myHeaders.append(
+        "Cookie",
+        `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
+      );
     }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
