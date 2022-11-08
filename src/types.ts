@@ -133,7 +133,7 @@ export interface SubtitleFormat {
 }
 export interface DeliverPayload {
   format:         string;
-  versionMapping: "VFVO"|"VF"|"VO";
+  versionMapping: "VO"|"VD"|"VOVD";
   timecodeOut:    string | null;
   timecodeIn:     string | null;
   subtitles:      DeliverSubtitle | null;
