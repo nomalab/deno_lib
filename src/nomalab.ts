@@ -209,6 +209,16 @@ export class Nomalab {
     return Promise.resolve(organisation[0]);
   }
 
+  async getOrganizationByName(organizationName : string) : Promise<Organization> {
+    const organisation = (await this.getOrganizations()).filter((org) => {
+      return org.name == organizationName;
+    });
+    if (organisation.length == 0) {
+      return Promise.reject(`Org ${organizationName} not found`);
+    }
+    return Promise.resolve(organisation[0]);
+  }
+  
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) {
