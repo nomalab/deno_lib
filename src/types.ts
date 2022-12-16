@@ -1,3 +1,20 @@
+import * as Formats from "./formats.ts";
+
+export interface MeUser {
+  admin: boolean;
+  avatar: string;
+  disableOrganizationEmails: boolean;
+  email: string;
+  id: string;
+  name: string;
+  organization: string;
+  organizations: {
+    organizationId: string;
+    organizationName: string;
+    logo?: string;
+  }[];
+}
+
 export interface Job {
   id: string;
   createdAt: string;
@@ -80,6 +97,7 @@ export interface Material extends FileWrapper {
   reportPdf: FileClass;
   deliveries: Delivery[];
   segments: Segment[];
+  subtitleWarnings: SubtitleWarning[];
 }
 
 export interface Container {
@@ -121,6 +139,11 @@ export interface Subtitles {
   subtitle: unknown[];
 }
 
+export interface SubtitleWarning {
+  name: string;
+  timecode: string;
+}
+
 export enum ArchiveState {
   Active = "active",
   Archived = "archived",
@@ -133,12 +156,13 @@ export interface SubtitleFormat {
 }
 export interface DeliverPayload {
   format: string;
-  versionMapping: "VO" | "VD" | "VDVO";
+  versionMapping: Formats.Mapping;
   timecodeOut: string | null;
   timecodeIn: string | null;
+  segments?: string[];
   subtitles: DeliverSubtitle | null;
   targetOrg: string;
-  targetId: null;
+  targetId: string | null;
 }
 export interface DeliverSubtitle {
   format: string | null;
@@ -424,7 +448,7 @@ export interface Proxies {
 
 export interface Segment {
   id: string;
-  label: string;
+  label: Formats.SegmentLabel;
   creator: Creator;
   createdAt: string;
   file: string;
@@ -600,11 +624,30 @@ export interface Organization {
   allowDeliveryWithoutTranscoding: boolean;
   replication: boolean;
   logo: null | string;
-  formats: Format[];
-  subtitleFormats: Format[];
+  formats: FormatClass[];
+  subtitleFormats: FormatClass[];
+}
+export interface ShowOrganization {
+  id: string;
+  name: string;
+  createdAt: string;
+  qcMasterTestPlan: string;
+  qcMasterReportTemplate: string;
+  enableCreationEmail: boolean;
+  enableVideoReadyEmail: boolean;
+  enableUploadSuccessEmail: boolean;
+  enableAutoAccept: boolean;
+  enableAutoReject: boolean;
+  broadcaster: null;
+  manualDelivery: boolean;
+  allowDeliveryWithoutTranscoding: boolean;
+  logo: null;
+  webhooks: Webhook[];
+  formats: unknown[];
+  subtitleFormats: unknown[];
 }
 
-export interface Format {
+export interface FormatClass {
   id: string;
   name: string;
 }
@@ -700,3 +743,21 @@ export interface NodeClass {
   kind: NodeKind;
   state: string;
 }
+
+export type DeliverableOrganization = {
+  id: string;
+  name: string;
+  allowDeliveryWithoutTranscoding: boolean;
+};
+
+export type DeliveryApi = {
+  nodes: NodeDelivery[];
+  shows: ShowClass[];
+};
+
+export type NodeDelivery = {
+  showId: string;
+  id: string;
+  name: string;
+  parent?: string;
+};
