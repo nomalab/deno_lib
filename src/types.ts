@@ -70,7 +70,7 @@ export interface Files {
 }
 
 export interface FileWrapper {
-  file : FileClass;
+  file: FileClass;
 }
 export interface Material extends FileWrapper {
   container: Container;
@@ -92,28 +92,28 @@ export interface Container {
 }
 
 export interface Deliveries {
-  shows:           Show[];
-  nodes:           DeliveryNode[];
-  formats:         DeliveriesFormat[];
+  shows: Show[];
+  nodes: DeliveryNode[];
+  formats: DeliveriesFormat[];
   subtitleFormats: SubtitleFormat[];
 }
 
 export interface DeliveriesFormat {
-  organizationId:                              string;
-  organizationName:                            string;
+  organizationId: string;
+  organizationName: string;
   organizationAllowDeliveryWithoutTranscoding: boolean;
-  formats:                                     FormatElement[];
+  formats: FormatElement[];
 }
 
 export interface FormatElement {
-  id:   string;
+  id: string;
   name: string;
 }
 
 export interface DeliveryNode {
   showId: string;
-  id:     string;
-  name:   string;
+  id: string;
+  name: string;
   parent: null | string;
 }
 
@@ -127,18 +127,18 @@ export enum ArchiveState {
 }
 
 export interface SubtitleFormat {
-  organizationId:   string;
+  organizationId: string;
   organizationName: string;
-  subtitleFormats:  FormatElement[];
+  subtitleFormats: FormatElement[];
 }
 export interface DeliverPayload {
-  format:         string;
-  versionMapping: "VO"|"VD"|"VDVO";
-  timecodeOut:    string | null;
-  timecodeIn:     string | null;
-  subtitles:      DeliverSubtitle | null;
-  targetOrg:      string;
-  targetId:       null;
+  format: string;
+  versionMapping: "VO" | "VD" | "VDVO";
+  timecodeOut: string | null;
+  timecodeIn: string | null;
+  subtitles: DeliverSubtitle | null;
+  targetOrg: string;
+  targetId: null;
 }
 export interface DeliverSubtitle {
   format: string | null;
@@ -570,7 +570,7 @@ export enum BroadcastableKind {
   Subtitle = "Subtitle",
   Material = "Material",
   Audio = "Audio",
-  Extra = "Extra"
+  Extra = "Extra",
 }
 
 export interface CopyToBroadcastable {
