@@ -209,7 +209,7 @@ export class Nomalab {
     return Promise.resolve(organisation[0]);
   }
 
-  async getOrganizationByName(organizationName : string) : Promise<Organization> {
+  async getOrganizationByName(organizationName: string): Promise<Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.name == organizationName;
     });
@@ -239,8 +239,10 @@ export class Nomalab {
 
     if (!response.ok) {
       this.#throwError(
-        `ERROR - Can't make a s3 copy with payload.${JSON.stringify(payload)} on url ${url}.`,
-        response
+        `ERROR - Can't make a s3 copy with payload.${
+          JSON.stringify(payload)
+        } on url ${url}.`,
+        response,
       );
     }
 

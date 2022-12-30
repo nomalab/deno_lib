@@ -37,18 +37,18 @@ export interface Show {
   jobs: Job[];
   creator: Creator;
   organization: ShowOrganization;
-  channels: any[];
-  invitations: any[];
-  timeline: any[];
-  extras: any[];
+  channels: unknown[];
+  invitations: unknown[];
+  timeline: unknown[];
+  extras: unknown[];
   activeBroadcastable: ActiveBroadcastable;
-  previousBroadcastables: any[];
+  previousBroadcastables: unknown[];
 }
 
 export interface ActiveBroadcastable {
   broadcastable: Broadcastable;
   files: Files;
-  comments: any[];
+  comments: unknown[];
 }
 
 export interface Broadcastable {
@@ -70,7 +70,7 @@ export interface Files {
 }
 
 export interface FileWrapper {
-  file : FileClass;
+  file: FileClass;
 }
 export interface Material extends FileWrapper {
   container: Container;
@@ -92,33 +92,33 @@ export interface Container {
 }
 
 export interface Deliveries {
-  shows:           Show[];
-  nodes:           DeliveryNode[];
-  formats:         DeliveriesFormat[];
+  shows: Show[];
+  nodes: DeliveryNode[];
+  formats: DeliveriesFormat[];
   subtitleFormats: SubtitleFormat[];
 }
 
 export interface DeliveriesFormat {
-  organizationId:                              string;
-  organizationName:                            string;
+  organizationId: string;
+  organizationName: string;
   organizationAllowDeliveryWithoutTranscoding: boolean;
-  formats:                                     FormatElement[];
+  formats: FormatElement[];
 }
 
 export interface FormatElement {
-  id:   string;
+  id: string;
   name: string;
 }
 
 export interface DeliveryNode {
   showId: string;
-  id:     string;
-  name:   string;
+  id: string;
+  name: string;
   parent: null | string;
 }
 
 export interface Subtitles {
-  subtitle: any[];
+  subtitle: unknown[];
 }
 
 export enum ArchiveState {
@@ -127,18 +127,18 @@ export enum ArchiveState {
 }
 
 export interface SubtitleFormat {
-  organizationId:   string;
+  organizationId: string;
   organizationName: string;
-  subtitleFormats:  FormatElement[];
+  subtitleFormats: FormatElement[];
 }
 export interface DeliverPayload {
-  format:         string;
-  versionMapping: "VO"|"VD"|"VDVO";
-  timecodeOut:    string | null;
-  timecodeIn:     string | null;
-  subtitles:      DeliverSubtitle | null;
-  targetOrg:      string;
-  targetId:       null;
+  format: string;
+  versionMapping: "VO" | "VD" | "VDVO";
+  timecodeOut: string | null;
+  timecodeIn: string | null;
+  subtitles: DeliverSubtitle | null;
+  targetOrg: string;
+  targetId: null;
 }
 export interface DeliverSubtitle {
   format: string | null;
@@ -160,7 +160,7 @@ export interface DeliveryTranscoding {
   startedAt: string;
   progressedAt: string;
   log: null | string;
-  warning: any[];
+  warning: unknown[];
 }
 
 export enum Phase {
@@ -197,7 +197,7 @@ export interface FileTranscoding {
   startedAt: string;
   progressedAt: string;
   log: null | string;
-  warning: any[];
+  warning: unknown[];
 }
 
 export interface Upload {
@@ -247,8 +247,8 @@ export interface StreamValue {
 }
 
 export interface Issues {
-  errors: any[];
-  warnings: any[];
+  errors: unknown[];
+  warnings: unknown[];
 }
 
 export interface PurpleNodeType {
@@ -340,7 +340,7 @@ export interface LivingstoneSouthernWhiteFacedOwl {
 }
 
 export interface Purple {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null | string;
   mapping: MaxShortTermLoudness[];
@@ -361,6 +361,7 @@ export interface Fluffy {
   value: null | string;
 }
 
+// deno-lint-ignore no-empty-interface
 export interface ProgramLoudnessEbu {
 }
 
@@ -369,16 +370,16 @@ export interface MP4TimeCodeTrackClass {
 }
 
 export interface MP4TimeCodeTrack {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null;
-  mapping: any[];
+  mapping: unknown[];
   SystemItem: ProgramLoudnessEbu[];
   TimeCodeTrack: TimeCodeTrack[];
   TimecodeTrack: ProgramLoudnessEbu[];
   ProgramLoudnessEBU: ProgramLoudnessEbu[];
   VideoTrackProperty: ProgramLoudnessEbu[];
-  MaxShortTermLoudness: any[];
+  MaxShortTermLoudness: unknown[];
 }
 
 export interface TimeCodeTrack {
@@ -397,16 +398,16 @@ export interface ProgLoudnessEBUClass {
 }
 
 export interface ProgLoudnessEBU {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null;
-  mapping: any[];
+  mapping: unknown[];
   SystemItem: ProgramLoudnessEbu[];
   TimeCodeTrack: ProgramLoudnessEbu[];
   TimecodeTrack: ProgramLoudnessEbu[];
   ProgramLoudnessEBU: ProgramLoudnessEBU[];
   VideoTrackProperty: ProgramLoudnessEbu[];
-  MaxShortTermLoudness: any[];
+  MaxShortTermLoudness: unknown[];
 }
 
 export interface ProgramLoudnessEBU {
@@ -484,8 +485,8 @@ export interface Subtitle extends FileWrapper {
   proxies: Proxies;
   reportXml: null;
   reportPdf: null;
-  deliveries: any[];
-  segments: any[];
+  deliveries: unknown[];
+  segments: unknown[];
 }
 
 export interface FluffyStream {
@@ -532,8 +533,8 @@ export interface ShowOrganization {
   allowDeliveryWithoutTranscoding: boolean;
   logo: null;
   webhooks: Webhook[];
-  formats: any[];
-  subtitleFormats: any[];
+  formats: unknown[];
+  subtitleFormats: unknown[];
 }
 
 export interface Webhook {
@@ -570,7 +571,7 @@ export enum BroadcastableKind {
   Subtitle = "Subtitle",
   Material = "Material",
   Audio = "Audio",
-  Extra = "Extra"
+  Extra = "Extra",
 }
 
 export interface CopyToBroadcastable {
