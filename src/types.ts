@@ -37,18 +37,18 @@ export interface Show {
   jobs: Job[];
   creator: Creator;
   organization: ShowOrganization;
-  channels: any[];
-  invitations: any[];
-  timeline: any[];
-  extras: any[];
+  channels: unknown[];
+  invitations: unknown[];
+  timeline: unknown[];
+  extras: unknown[];
   activeBroadcastable: ActiveBroadcastable;
-  previousBroadcastables: any[];
+  previousBroadcastables: unknown[];
 }
 
 export interface ActiveBroadcastable {
   broadcastable: Broadcastable;
   files: Files;
-  comments: any[];
+  comments: unknown[];
 }
 
 export interface Broadcastable {
@@ -118,7 +118,7 @@ export interface DeliveryNode {
 }
 
 export interface Subtitles {
-  subtitle: any[];
+  subtitle: unknown[];
 }
 
 export enum ArchiveState {
@@ -160,7 +160,7 @@ export interface DeliveryTranscoding {
   startedAt: string;
   progressedAt: string;
   log: null | string;
-  warning: any[];
+  warning: unknown[];
 }
 
 export enum Phase {
@@ -197,7 +197,7 @@ export interface FileTranscoding {
   startedAt: string;
   progressedAt: string;
   log: null | string;
-  warning: any[];
+  warning: unknown[];
 }
 
 export interface Upload {
@@ -247,8 +247,8 @@ export interface StreamValue {
 }
 
 export interface Issues {
-  errors: any[];
-  warnings: any[];
+  errors: unknown[];
+  warnings: unknown[];
 }
 
 export interface PurpleNodeType {
@@ -340,7 +340,7 @@ export interface LivingstoneSouthernWhiteFacedOwl {
 }
 
 export interface Purple {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null | string;
   mapping: MaxShortTermLoudness[];
@@ -361,6 +361,7 @@ export interface Fluffy {
   value: null | string;
 }
 
+// deno-lint-ignore no-empty-interface
 export interface ProgramLoudnessEbu {
 }
 
@@ -369,16 +370,16 @@ export interface MP4TimeCodeTrackClass {
 }
 
 export interface MP4TimeCodeTrack {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null;
-  mapping: any[];
+  mapping: unknown[];
   SystemItem: ProgramLoudnessEbu[];
   TimeCodeTrack: TimeCodeTrack[];
   TimecodeTrack: ProgramLoudnessEbu[];
   ProgramLoudnessEBU: ProgramLoudnessEbu[];
   VideoTrackProperty: ProgramLoudnessEbu[];
-  MaxShortTermLoudness: any[];
+  MaxShortTermLoudness: unknown[];
 }
 
 export interface TimeCodeTrack {
@@ -397,16 +398,16 @@ export interface ProgLoudnessEBUClass {
 }
 
 export interface ProgLoudnessEBU {
-  area: any[];
+  area: unknown[];
   name: string;
   value: null;
-  mapping: any[];
+  mapping: unknown[];
   SystemItem: ProgramLoudnessEbu[];
   TimeCodeTrack: ProgramLoudnessEbu[];
   TimecodeTrack: ProgramLoudnessEbu[];
   ProgramLoudnessEBU: ProgramLoudnessEBU[];
   VideoTrackProperty: ProgramLoudnessEbu[];
-  MaxShortTermLoudness: any[];
+  MaxShortTermLoudness: unknown[];
 }
 
 export interface ProgramLoudnessEBU {
@@ -484,8 +485,8 @@ export interface Subtitle extends FileWrapper {
   proxies: Proxies;
   reportXml: null;
   reportPdf: null;
-  deliveries: any[];
-  segments: any[];
+  deliveries: unknown[];
+  segments: unknown[];
 }
 
 export interface FluffyStream {
@@ -532,8 +533,8 @@ export interface ShowOrganization {
   allowDeliveryWithoutTranscoding: boolean;
   logo: null;
   webhooks: Webhook[];
-  formats: any[];
-  subtitleFormats: any[];
+  formats: unknown[];
+  subtitleFormats: unknown[];
 }
 
 export interface Webhook {
