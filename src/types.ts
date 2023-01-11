@@ -40,7 +40,7 @@ export interface Show {
   channels: unknown[];
   invitations: unknown[];
   timeline: unknown[];
-  extras: File[];
+  extras: FileWrapper[];
   activeBroadcastable: ActiveBroadcastable;
   previousBroadcastables: unknown[];
 }
@@ -80,11 +80,6 @@ export interface Material extends FileWrapper {
   reportPdf: FileClass;
   deliveries: Delivery[];
   segments: Segment[];
-}
-export interface Material extends File {
-  reportXml: FileClass;
-  reportPdf: FileClass;
-  deliveries: Delivery[];
 }
 
 export interface Container {
