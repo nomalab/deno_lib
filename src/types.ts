@@ -40,7 +40,7 @@ export interface Show {
   channels: unknown[];
   invitations: unknown[];
   timeline: unknown[];
-  extras: unknown[];
+  extras: File[];
   activeBroadcastable: ActiveBroadcastable;
   previousBroadcastables: unknown[];
 }
@@ -80,6 +80,11 @@ export interface Material extends FileWrapper {
   reportPdf: FileClass;
   deliveries: Delivery[];
   segments: Segment[];
+}
+export interface Material extends File {
+  reportXml: FileClass;
+  reportPdf: FileClass;
+  deliveries: Delivery[];
 }
 
 export interface Container {
@@ -479,7 +484,8 @@ export interface PurpleStream {
   typeVersion?: string;
 }
 
-export interface Subtitle extends FileWrapper {
+export interface Subtitle {
+  file: FileClass;
   container: null;
   streams: Array<Array<FluffyStream | string>>;
   proxies: Proxies;
