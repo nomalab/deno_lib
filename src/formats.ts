@@ -194,3 +194,30 @@ export enum Mapping {
   VDVIVONLY = "VDVIVONLY",
   VDVIMEVONLY = "VDVIMEVONLY",
 }
+
+export enum Layout {
+  Mono = "Mono",
+  DualMono = "DualMono",
+  Stereo = "Stereo",
+  StereoL = "StereoL",
+  StereoR = "StereoR",
+  FiveDotOne = "FiveDotOne",
+  FiveDotOneL = "FiveDotOneL",
+  FiveDotOneR = "FiveDotOneR",
+  FiveDotOneC = "FiveDotOneC",
+  FiveDotOneSL = "FiveDotOneSL",
+  FiveDotOneSR = "FiveDotOneSR",
+  FiveDotOneLFE = "FiveDotOneLFE",
+  SevenDotOne = "SevenDotOne",
+  OneTrack = "OneTrack",
+}
+
+export enum TypeVersion {
+  ORIGINAL = "ORIGINAL",
+  DUBBED = "DUBBED",
+  AD = "AD",
+  MUTE = "MUTE",
+  INT = "INT",
+  ME = "ME",
+  VONLY = "VONLY",
+}

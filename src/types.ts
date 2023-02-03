@@ -91,7 +91,7 @@ export interface FileWrapper {
 }
 export interface Material extends FileWrapper {
   container: Container;
-  streams: Array<Array<PurpleStream | string>>;
+  streams: FileStream[];
   proxies: Proxies;
   reportXml: FileClass;
   reportPdf: FileClass;
@@ -144,11 +144,6 @@ export interface SubtitleWarning {
   timecode: string;
 }
 
-export enum ArchiveState {
-  Active = "active",
-  Archived = "archived",
-}
-
 export interface SubtitleFormat {
   organizationId: string;
   organizationName: string;
@@ -174,24 +169,7 @@ export interface Delivery {
   id: string;
   title: string;
   organizationName: string;
-  transcoding: DeliveryTranscoding;
-}
-
-export interface DeliveryTranscoding {
-  file: string;
-  phase: Phase;
-  progress: number | null | string;
-  startedAt: string;
-  progressedAt: string;
-  log: null | string;
-  warning: unknown[];
-}
-
-export enum Phase {
-  Encoding = "Encoding",
-  Finished = "Finished",
-  Packaging = "Packaging",
-  Waiting = "Waiting",
+  transcoding: Transcoding;
 }
 
 export interface FileClass {
@@ -210,32 +188,8 @@ export interface FileClass {
   uploadedAt: null | string;
   verification: Verification | null;
   sourceId: null | string;
-  transcoding: FileTranscoding | null;
+  transcoding: Transcoding | null;
   format: null;
-}
-
-export interface FileTranscoding {
-  file: string;
-  phase: Phase;
-  progress: number | null;
-  startedAt: string;
-  progressedAt: string;
-  log: null | string;
-  warning: unknown[];
-}
-
-export interface Upload {
-  file: string;
-  user: string;
-  progress: number;
-  progressedAt: string;
-  pausedAt: null;
-  completedAt: string;
-  error: null;
-  s3Id: string;
-  speed: number;
-  secondsLeft: number;
-  source: string;
 }
 
 export interface Verification {
@@ -266,31 +220,13 @@ export interface StreamValue {
   name: string;
   issues: Issues;
   parent: string;
-  nodeType: Array<Array<PurpleNodeType | string> | FluffyNodeType | string>;
+  nodeType: NodeType;
   properties: Properties;
 }
 
 export interface Issues {
   errors: unknown[];
   warnings: unknown[];
-}
-
-export interface PurpleNodeType {
-  duration: string;
-  startTimecode: string;
-}
-
-export interface FluffyNodeType {
-  frameRate?: null;
-  chromaFormat?: null;
-  scanningType?: null;
-  cadencePattern?: null;
-  activePixelsArea?: null;
-  displayAspectRatio?: null;
-  isMute?: boolean;
-  channels?: Channel[];
-  loudnessRange?: string;
-  programLoudness?: string;
 }
 
 export interface Channel {
@@ -443,7 +379,7 @@ export interface ProgramLoudnessEBU {
 
 export interface Proxies {
   lowRes: FileClass;
-  hiRes: null;
+  hiRes: FileClass | null;
 }
 
 export interface Segment {
@@ -475,7 +411,13 @@ export interface OrganizationElement {
   logo: null | string;
 }
 
-export interface PurpleStream {
+export type FileStream =
+  | ["VideoStream", FileVideoStream]
+  | ["AudioStream", FileAudioStream]
+  | ["SubtitleStream", FileSubtitleStream]
+  | ["DataStream", FileDataStream];
+
+export interface FileVideoStream {
   fileId: string;
   index: number;
   codecName?: string;
@@ -486,21 +428,50 @@ export interface PurpleStream {
   displayAspectRatioNumerator?: number;
   displayAspectRatioDenominator?: number;
   bitRate?: number;
-  rFrameRateNumerator?: number;
-  rFrameRateDenominator?: number;
-  level?: null;
-  profile?: null;
-  startTime?: number;
+  rFrameRateNumerator: number;
+  rFrameRateDenominator: number;
+  level?: number;
+  profile?: string;
   chromaSubsampling?: string;
   scanningType?: string;
   timecode?: string;
-  sampleRate?: number;
-  sampleFormat?: string;
-  channels?: number;
-  bitsPerSample?: number;
-  channelLayout?: string;
-  version?: string;
-  typeVersion?: string;
+  nbFrames?: number;
+}
+
+export interface FileAudioStream {
+  fileId: string;
+  index: number;
+  codecName: string;
+  codecLongName: string;
+  duration?: number;
+  sampleRate: number;
+  sampleFormat: string;
+  channels: number;
+  bitsPerSample: number;
+  bitRate: number;
+  channelLayout: Formats.Layout | null;
+  version: Formats.Version | null;
+  typeVersion: Formats.TypeVersion | null;
+}
+
+export interface FileSubtitleStream {
+  fileId: string;
+  index: number;
+  codecName?: string;
+  codecLongName?: string;
+  version?: Formats.Version;
+  frameRateNumerator?: number;
+  frameRateDenominator?: number;
+  startTimecode?: string;
+  firstCue?: string;
+  subtitleType?: string;
+  typeVersion: Formats.SubtitleTypeVersion | null;
+}
+
+export interface FileDataStream {
+  fileId: string;
+  index: number;
+  timecode?: string;
 }
 
 export interface Subtitle extends FileWrapper {
@@ -587,7 +558,7 @@ export interface ShowClass {
   accepted: boolean;
   commandInfoXML: null;
   kind: ShowKind;
-  state: ArchiveState;
+  state: State;
   parent: string;
 }
 
@@ -627,6 +598,7 @@ export interface Organization {
   formats: FormatClass[];
   subtitleFormats: FormatClass[];
 }
+
 export interface ShowOrganization {
   id: string;
   name: string;
@@ -761,3 +733,284 @@ export type NodeDelivery = {
   name: string;
   parent?: string;
 };
+
+export interface FileContainer {
+  fileId: string;
+  formatName: string;
+  formatLongName: string;
+  duration?: number;
+  bitRate?: number;
+  timecode?: string;
+}
+
+export interface FileLike {
+  name: string;
+  mimeType?: string;
+}
+
+export enum BroadcastableFileKind {
+  ProxyManifest = "ProxyManifest",
+  ProxyDashVideo = "ProxyDashVideo",
+  ProxyAudio = "ProxyAudio",
+  ProxySubtitle = "ProxySubtitle",
+  VerificationReportPdf = "VerificationReportPdf",
+  VerificationReportXml = "VerificationReportXml",
+  Video = "Video",
+  Audio = "Audio",
+  Subtitle = "Subtitle",
+  Extra = "Extra",
+}
+
+export interface File {
+  id: string;
+  createdAt: string;
+  name: string;
+  size: number;
+  mimeType?: string;
+  bucket: string;
+  key: string;
+  kind: Kind;
+  uploaderId?: string;
+  upload: Upload | null;
+  uploadedAt?: string;
+  verification: Verification | null;
+  sourceId?: string;
+  transcoding: Transcoding | null;
+  state: State;
+  stateExpireAt?: string;
+  format: Formats.Format | null;
+}
+
+export interface ExtraApi {
+  file: File;
+  proxy: File | null;
+  segments: FileSegment[];
+  container: FileContainer | null;
+  streams: FileStream[];
+}
+
+export interface FileUploads {
+  uploads: File[];
+  parts: UploadPart[];
+}
+
+export interface UploadPart {
+  uploadId: string;
+  key: string;
+}
+
+export interface FileLinkQueries {
+  download: boolean;
+}
+
+export interface NewFile {
+  name: string;
+  size: number;
+  mimeType?: string;
+  bucket: string;
+  key: string;
+  kind: Kind;
+  uploaderId?: string;
+  upload: Upload | null;
+  sourceId?: string;
+  transcoding: Transcoding | null;
+}
+
+export interface BroadcastableApi {
+  file: File;
+  container: FileContainer | null;
+  streams: FileStream[];
+  proxies: Proxies;
+  reportXml: File | null;
+  reportPdf: File | null;
+  deliveries: Delivery[];
+  segments: FileSegment[];
+  subtitleWarnings: { name: string; timecode: string }[];
+}
+
+export interface FileSegment {
+  id: string;
+  label: SegmentLabel;
+  creator: User;
+  createdAt: string;
+  file: string;
+  frameIn: number;
+  frameOut: number;
+}
+
+export enum SegmentLabel {
+  OpeningCredits = "OpeningCredits",
+  EndingCredits = "EndingCredits",
+  Introduction = "Introduction",
+  Program = "Program",
+  Trailer = "Trailer",
+  Advertising = "Advertising",
+  TestPattern = "TestPattern",
+  Black = "Black",
+  Slate = "Slate",
+  NeutralBases = "NeutralBases",
+  CustomDelivery = "CustomDelivery",
+}
+
+export interface FileSegmentPayload {
+  label: SegmentLabel;
+  frameIn: number;
+  frameOut: number;
+}
+
+export interface CreateFile {
+  name: string;
+  size: number;
+  mimeType?: string;
+  source?: string;
+  kind: BroadcastableFileKind;
+}
+
+export interface ResumeFile {
+  name: string;
+  kind: BroadcastableFileKind;
+}
+
+export enum FileTypeVideo {
+  Mxf = "Mxf",
+  Qtff = "Qtff",
+  Mp4 = "Mp4",
+}
+
+export enum FileTypeAudio {
+  Mp3 = "Mp3",
+}
+
+export type FileType =
+  | ["FileTypeVideo", FileTypeVideo]
+  | ["FileTypeAudio", FileTypeAudio]
+  | ["FileTypeSubtitle"];
+
+export enum Phase {
+  Waiting = "Waiting",
+  Downloading = "Downloading",
+  Encoding = "Encoding",
+  Packaging = "Packaging",
+  Uploading = "Uploading",
+  Finished = "Finished",
+}
+
+export interface TranscodeWarning {
+  name: string;
+  count: number;
+  firstFrameApprox: number;
+}
+
+export interface Transcoding {
+  file?: string;
+  phase: Phase;
+  progress?: number;
+  startedAt: string;
+  progressedAt: string;
+  log?: string;
+  warning: TranscodeWarning[];
+}
+
+export interface Progress {
+  phase: Phase;
+  progress?: number;
+}
+
+export interface Upload {
+  file: string;
+  user: string;
+  progress: number;
+  progressedAt: string;
+  pausedAt?: string;
+  completedAt?: string;
+  error?: string;
+  s3Id?: string;
+  speed: number;
+  secondsLeft?: number;
+  source?: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  organization?: string;
+  organizations: OrganizationUserWithLabel[];
+  admin: boolean;
+  disableOrganizationEmails: boolean;
+}
+
+export interface OrganizationUserWithLabel {
+  organizationId: string;
+  organizationName: string;
+  logo?: string;
+}
+
+export interface OrganizationUser {
+  userId: string;
+  organizationId: string;
+}
+
+export type NodeType =
+  | ["AudioProgram", AudioProgram]
+  | ["VideoProgram", VideoProgram]
+  | ["Container", ContainerProgram]
+  | ["UnknownNodeType"];
+
+export interface AudioProgram {
+  programLoudness?: string;
+  loudnessRange?: string;
+  channels: AudioChannel[];
+  isMute: boolean;
+}
+
+export interface AudioChannel {
+  label: string;
+  truePeakLevel: string;
+}
+
+export interface VideoProgram {
+  displayAspectRatio?: string;
+  frameRate?: string;
+  activePixelsArea?: string;
+  cadencePattern?: string;
+  chromaFormat?: string;
+  scanningType?: string;
+}
+
+export type ContainerProgram =
+  | ["Mxf", MxfContainerProperties]
+  | ["Mov", MovContainerProperties]
+  | ["UnsupportedContainer"];
+
+export interface MovContainerProperties {
+  startTimecode?: string;
+  duration?: string;
+}
+
+export interface MxfContainerProperties {
+  operationalPattern?: string;
+  timeCodes: TimeCodes;
+  product: Product;
+}
+
+export interface TimeCodes {
+  duration?: string;
+  systemItemStart?: string;
+  sourcePackageStart?: string;
+  materialPackageStart?: string;
+  hasVitc?: string;
+}
+
+export interface Product {
+  name?: string;
+  version?: string;
+  issuer?: string;
+}
+
+export enum State {
+  Active = "Active",
+  Archived = "Archived",
+  Restoring = "Restoring",
+}
