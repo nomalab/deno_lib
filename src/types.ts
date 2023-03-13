@@ -172,26 +172,6 @@ export interface Delivery {
   transcoding: Transcoding;
 }
 
-export interface FileClass {
-  state: string;
-  stateExpireAt: null;
-  id: string;
-  createdAt: string;
-  name: string;
-  size: number;
-  mimeType: null | string;
-  bucket: string;
-  key: string;
-  kind: string;
-  uploaderId: null | string;
-  upload: Upload | null;
-  uploadedAt: null | string;
-  verification: Verification | null;
-  sourceId: null | string;
-  transcoding: Transcoding | null;
-  format: null;
-}
-
 export interface Verification {
   progress: number;
   error: null;
@@ -761,36 +741,37 @@ export enum BroadcastableFileKind {
   Extra = "Extra",
 }
 
-export interface File {
+
+export interface FileClass {
+  state: string;
+  stateExpireAt: string | null;
   id: string;
   createdAt: string;
   name: string;
   size: number;
-  mimeType?: string;
+  mimeType: null | string;
   bucket: string;
   key: string;
-  kind: Kind;
-  uploaderId?: string;
+  kind: string;
+  uploaderId: null | string;
   upload: Upload | null;
-  uploadedAt?: string;
+  uploadedAt: null | string;
   verification: Verification | null;
-  sourceId?: string;
+  sourceId: null | string;
   transcoding: Transcoding | null;
-  state: State;
-  stateExpireAt?: string;
-  format: Formats.Format | null;
+  format: Formats.Format;
 }
 
 export interface ExtraApi {
-  file: File;
-  proxy: File | null;
+  file: FileClass;
+  proxy: FileClass | null;
   segments: FileSegment[];
   container: FileContainer | null;
   streams: FileStream[];
 }
 
 export interface FileUploads {
-  uploads: File[];
+  uploads: FileClass[];
   parts: UploadPart[];
 }
 
@@ -817,12 +798,12 @@ export interface NewFile {
 }
 
 export interface BroadcastableApi {
-  file: File;
+  file: FileClass;
   container: FileContainer | null;
   streams: FileStream[];
   proxies: Proxies;
-  reportXml: File | null;
-  reportPdf: File | null;
+  reportXml: FileClass | null;
+  reportPdf: FileClass | null;
   deliveries: Delivery[];
   segments: FileSegment[];
   subtitleWarnings: { name: string; timecode: string }[];

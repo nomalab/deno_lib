@@ -442,25 +442,18 @@ export class Nomalab {
     },
   ): Promise<Response> {
     const myHeaders = new Headers();
-    myHeaders.append(
-      "Content-Type",
-      optionalArg.contentType ?? "application/json",
-    );
-    myHeaders.append("Authorization", `Bearer ${this.#apiToken}`);
-    if (optionalArg.cookieHeader) {
-      myHeaders.append(
-        "Cookie",
-        `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
-      );
-    }
+    myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
+    myHeaders.append("Cookie", `sessionJwt=${this.#apiToken}`);
+    // myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
+    // if (optionalArg.cookieHeader) {
+    //   myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`)
+    // }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
-        body: (optionalArg.bodyJsonObject === undefined)
-          ? null
-          : JSON.stringify(optionalArg.bodyJsonObject),
+        body: (optionalArg.bodyJsonObject === undefined) ? null : JSON.stringify(optionalArg.bodyJsonObject),
         credentials: "include",
       },
     );
