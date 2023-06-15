@@ -133,15 +133,9 @@ export class Nomalab {
     // To avoid leak since we don't use the body of the response
     await response.body?.cancel();
 
-    const cookie = mod.getCookies(headers);
-    const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
     return this.#fetch(
       partialUrl,
-      {
-        bodyJsonObject,
-        method,
-        cookieHeader: cookie,
-      },
+      optionalArg,
     );
   }
 
@@ -458,6 +452,12 @@ export class Nomalab {
         "Cookie",
         `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
       );
+    } else {
+      myHeaders.append(
+        "Cookie",
+        `sessionJwt=${this.#apiToken}`,
+      );
+
     }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
