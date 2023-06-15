@@ -821,7 +821,6 @@ export enum BroadcastableFileKind {
   Extra = "Extra",
 }
 
-
 export interface FileClass {
   state: string;
   stateExpireAt: string | null;

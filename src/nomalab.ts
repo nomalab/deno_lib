@@ -464,7 +464,9 @@ export class Nomalab {
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
-        body: (optionalArg.bodyJsonObject === undefined) ? null : JSON.stringify(optionalArg.bodyJsonObject),
+        body: (optionalArg.bodyJsonObject === undefined)
+          ? null
+          : JSON.stringify(optionalArg.bodyJsonObject),
         credentials: "include",
       },
     );
