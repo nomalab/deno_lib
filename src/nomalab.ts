@@ -74,12 +74,9 @@ export class Nomalab {
       organizationId,
       "hierarchy",
       {
-        method: "POST",
-        bodyJsonObject: {
-          name,
-          parent,
-          kind,
-        },
+        name,
+        parent,
+        kind,
       },
     );
     if (!response.ok) {
@@ -135,7 +132,17 @@ export class Nomalab {
 
     // To avoid leak since we don't use the body of the response
     await response.body?.cancel();
-    return this.#fetch(partialUrl, optionalArg);
+
+    const cookie = mod.getCookies(headers);
+    const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
+    return this.#fetch(
+      partialUrl,
+      {
+        bodyJsonObject,
+        method,
+        cookieHeader: cookie,
+      },
+    );
   }
 
   async getChildren(nodeUuid: string): Promise<NodeClass[]> {
@@ -230,20 +237,6 @@ export class Nomalab {
     return Promise.resolve(organisation[0]);
   }
 
-  async jobs(organizationId: string): Promise<Job[]> {
-    const response = await this.#fetch(
-      `organizations/${organizationId}/jobs`,
-      {},
-    );
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find jobs for organisation id ${organizationId}.`,
-        response,
-      );
-    }
-    return response.json() as Promise<Job[]>;
-  }
-
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) {
@@ -261,10 +254,16 @@ export class Nomalab {
         method: "POST",
       },
     );
+
     if (!response.ok) {
-      console.log("[S3 UPLOAD]", "url:", url, "payload:", payload);
-      this.#throwError(`ERROR - Can't make a s3 copy with payload.`, response);
+      this.#throwError(
+        `ERROR - Can't make a s3 copy with payload.${
+          JSON.stringify(payload)
+        } on url ${url}.`,
+        response,
+      );
     }
+
     return Promise.resolve();
   }
 
@@ -294,7 +293,10 @@ export class Nomalab {
           "Can't deliver because of an already present deliverable.",
         );
       } else {
-        this.#throwError(`ERROR - Can't deliver with payload.`, response);
+        this.#throwError(
+          `ERROR - Can't deliver with payload.${deliverPayload}`,
+          response,
+        );
       }
     }
     return Promise.resolve() as Promise<void>;
@@ -305,13 +307,17 @@ export class Nomalab {
       `broadcastables/${broadcastableId}/delivery`,
       { method: "POST", bodyJsonObject: {} },
     );
+    console.log(response.headers);
     if (!response.ok) {
       if (response.status == 409) {
         throw new AlreadyPresentDeliverable(
           "Can't deliver because of an already present deliverable.",
         );
       } else {
-        this.#throwError(`ERROR - Can't deliver show.`, response);
+        this.#throwError(
+          `ERROR - Can't accept and deliver show. [${broadcastableId}]`,
+          response,
+        );
       }
     }
     return Promise.resolve() as Promise<void>;
@@ -442,12 +448,17 @@ export class Nomalab {
     },
   ): Promise<Response> {
     const myHeaders = new Headers();
-    myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
-    myHeaders.append("Cookie", `sessionJwt=${this.#apiToken}`);
-    // myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
-    // if (optionalArg.cookieHeader) {
-    //   myHeaders.append("Cookie", `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`)
-    // }
+    myHeaders.append(
+      "Content-Type",
+      optionalArg.contentType ?? "application/json",
+    );
+    myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
+    if (optionalArg.cookieHeader) {
+      myHeaders.append(
+        "Cookie",
+        `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
+      );
+    }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {

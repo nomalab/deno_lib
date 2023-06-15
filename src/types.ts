@@ -57,7 +57,7 @@ export interface Show {
   channels: unknown[];
   invitations: unknown[];
   timeline: unknown[];
-  extras: unknown[];
+  extras: FileWrapper[];
   activeBroadcastable: ActiveBroadcastable;
   previousBroadcastables: unknown[];
 }
@@ -169,7 +169,68 @@ export interface Delivery {
   id: string;
   title: string;
   organizationName: string;
-  transcoding: Transcoding;
+  transcoding: DeliveryTranscoding;
+}
+
+export interface DeliveryTranscoding {
+  file: string;
+  phase: Phase;
+  progress: number | null | string;
+  startedAt: string;
+  progressedAt: string;
+  log: null | string;
+  warning: TranscodeWarning[];
+}
+
+export enum Phase {
+  Encoding = "Encoding",
+  Finished = "Finished",
+  Packaging = "Packaging",
+  Waiting = "Waiting",
+}
+
+export interface FileClass {
+  state: string;
+  stateExpireAt: null;
+  id: string;
+  createdAt: string;
+  name: string;
+  size: number;
+  mimeType: null | string;
+  bucket: string;
+  key: string;
+  kind: string;
+  uploaderId: null | string;
+  upload: Upload | null;
+  uploadedAt: null | string;
+  verification: Verification | null;
+  sourceId: null | string;
+  transcoding: FileTranscoding | null;
+  format: null;
+}
+
+export interface FileTranscoding {
+  file: string;
+  phase: Phase;
+  progress: number | null;
+  startedAt: string;
+  progressedAt: string;
+  log: null | string;
+  warning: unknown[];
+}
+
+export interface Upload {
+  file: string;
+  user: string;
+  progress: number;
+  progressedAt: string;
+  pausedAt: null;
+  completedAt: string;
+  error: null;
+  s3Id: string;
+  speed: number;
+  secondsLeft: number;
+  source: string;
 }
 
 export interface Verification {
@@ -207,6 +268,24 @@ export interface StreamValue {
 export interface Issues {
   errors: unknown[];
   warnings: unknown[];
+}
+
+export interface PurpleNodeType {
+  duration: string;
+  startTimecode: string;
+}
+
+export interface FluffyNodeType {
+  frameRate?: null;
+  chromaFormat?: null;
+  scanningType?: null;
+  cadencePattern?: null;
+  activePixelsArea?: null;
+  displayAspectRatio?: null;
+  isMute?: boolean;
+  channels?: Channel[];
+  loudnessRange?: string;
+  programLoudness?: string;
 }
 
 export interface Channel {
@@ -454,7 +533,8 @@ export interface FileDataStream {
   timecode?: string;
 }
 
-export interface Subtitle extends FileWrapper {
+export interface Subtitle {
+  file: FileClass;
   container: null;
   streams: Array<Array<FluffyStream | string>>;
   proxies: Proxies;

@@ -1,4 +1,4 @@
-# deno_lib
+# Nomalab deno lib
 
 Deno lib to handle Nomalab API with deno
 
