@@ -109,6 +109,13 @@ export interface Container {
   timecode: null;
 }
 
+export interface AudioMappingPayload {
+  index: number;
+  channelLayout?: string;
+  version?: string;
+  typeVersion?: string;
+}
+
 export interface Deliveries {
   shows: Show[];
   nodes: DeliveryNode[];
@@ -491,6 +498,7 @@ export interface FileVideoStream {
   rFrameRateDenominator: number;
   level?: number;
   profile?: string;
+  startTime?: number;
   chromaSubsampling?: string;
   scanningType?: string;
   timecode?: string;
@@ -890,7 +898,7 @@ export interface BroadcastableApi {
 
 export interface FileSegment {
   id: string;
-  label: SegmentLabel;
+  label: Formats.SegmentLabel;
   creator: User;
   createdAt: string;
   file: string;
@@ -898,22 +906,8 @@ export interface FileSegment {
   frameOut: number;
 }
 
-export enum SegmentLabel {
-  OpeningCredits = "OpeningCredits",
-  EndingCredits = "EndingCredits",
-  Introduction = "Introduction",
-  Program = "Program",
-  Trailer = "Trailer",
-  Advertising = "Advertising",
-  TestPattern = "TestPattern",
-  Black = "Black",
-  Slate = "Slate",
-  NeutralBases = "NeutralBases",
-  CustomDelivery = "CustomDelivery",
-}
-
 export interface FileSegmentPayload {
-  label: SegmentLabel;
+  label: Formats.SegmentLabel;
   frameIn: number;
   frameOut: number;
 }

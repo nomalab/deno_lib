@@ -4,6 +4,7 @@ import {
   Deliveries,
   DeliverPayload,
   DeliveryApi,
+  AudioMappingPayload,
   Job,
   MeUser,
   Node,
@@ -414,6 +415,16 @@ export class Nomalab {
       {},
     );
     return response.json() as Promise<SubtitleFormat[]>;
+  }
+
+  setAudioMapping(fileId : string, mappingPayload : AudioMappingPayload): Promise<Response> {
+    return this.#fetch(
+      `files/${fileId}/audioMapping`,
+      {
+        bodyJsonObject: mappingPayload,
+        method: "POST",
+      },
+    );
   }
 
   #throwError(message: string, response: Response): void {
