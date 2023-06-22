@@ -1,18 +1,25 @@
 import {
   CopyToBroadcastable,
+  DeliverableOrganization,
   Deliveries,
   DeliverPayload,
+  DeliveryApi,
+  AudioMappingPayload,
   Job,
+  MeUser,
   Node,
   NodeClass,
   NodeKind,
   Organization,
   Path,
+  Segment,
   Show,
   ShowClass,
   ShowKind,
+  SubtitleFormat,
 } from "./types.ts";
-import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
+import { Format } from "./formats.ts";
+import { assert, getSetCookies } from "./deps.ts";
 
 export class AlreadyPresentDeliverable extends Error {
   constructor(msg: string) {
@@ -27,6 +34,14 @@ export class Nomalab {
   constructor(context: string, apiToken: string) {
     this.#context = context;
     this.#apiToken = apiToken;
+  }
+
+  async me(): Promise<MeUser> {
+    const response = await this.#fetch(`users/me`, {});
+    if (!response.ok) {
+      this.#throwError(`ERROR - Can't load user infos.`, response);
+    }
+    return response.json() as Promise<MeUser>;
   }
 
   async getShow(showUuid: string): Promise<Show> {
@@ -44,6 +59,7 @@ export class Nomalab {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
+      {},
     );
     if (!response.ok) this.#throwError(`ERROR - Can't find root.`, response);
     return response.json() as Promise<NodeClass[]>;
@@ -58,7 +74,6 @@ export class Nomalab {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
-      "POST",
       {
         name,
         parent,
@@ -94,8 +109,12 @@ export class Nomalab {
   async #requestWithSwitch(
     organizationId: string,
     partialUrl: string,
-    method?: "GET" | "POST",
-    body?: unknown,
+    optionalArg: {
+      method?: string;
+      bodyJsonObject?: unknown;
+      contentType?: string;
+      cookieHeader?: Record<string, string>;
+    },
   ): Promise<Response> {
     const response = await this.#fetch(
       `users/switch`,
@@ -104,26 +123,21 @@ export class Nomalab {
         method: "POST",
       },
     );
-    if (response.status != 200) {
+    if (!response.ok) {
       this.#throwError(`Can't switch to org ${organizationId}`, response);
     }
-    const headers = new Headers();
-    const setCookie = response.headers.get("set-cookie");
-    if (setCookie != null) {
-      headers.append("Cookie", setCookie);
-    }
+
+    const setCookie = getSetCookies(response.headers)[0];
+    assert(setCookie, "No cookie");
+    this.#apiToken = setCookie.value;
+    getSetCookies(response.headers)[0];
+
     // To avoid leak since we don't use the body of the response
     await response.body?.cancel();
 
-    const cookie = mod.getCookies(headers);
-    const bodyJsonObject = method == "POST" ? (body ?? {}) : undefined;
     return this.#fetch(
       partialUrl,
-      {
-        bodyJsonObject,
-        method,
-        cookieHeader: cookie,
-      },
+      optionalArg,
     );
   }
 
@@ -261,27 +275,14 @@ export class Nomalab {
   }
 
   // Deliver with starting a transcode
-  async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
-    const response = await this.#fetch(
-      `broadcastables/${showId}/deliver`,
+  deliver(broadcastableId: string, deliverPayload: DeliverPayload): Promise<Response> {
+    return this.#fetch(
+      `broadcastables/${broadcastableId}/deliver`,
       {
         bodyJsonObject: deliverPayload,
         method: "POST",
       },
-    );
-    if (!response.ok) {
-      if (response.status == 409) {
-        throw new AlreadyPresentDeliverable(
-          "Can't deliver because of an already present deliverable.",
-        );
-      } else {
-        this.#throwError(
-          `ERROR - Can't deliver with payload.${deliverPayload}`,
-          response,
-        );
-      }
-    }
-    return Promise.resolve() as Promise<void>;
+    ) as Promise<Response>;
   }
 
   async triggerUpload(broadcastableId: string) {
@@ -315,7 +316,6 @@ export class Nomalab {
         `broadcastables/${broadcastableId}/delivery`,
         { method: "POST", bodyJsonObject: {} },
       );
-      console.log(response.headers);
       if (!response.ok) {
         if (response.status == 409) {
           throw new AlreadyPresentDeliverable(
@@ -374,10 +374,62 @@ export class Nomalab {
     return response.blob() as Promise<Blob>;
   }
 
+  async getDeliverableOrgs() {
+    const response = await this.#fetch(`organizations/deliverables`, {});
+    return response.json() as Promise<DeliverableOrganization[]>;
+  }
+
+  async getFileSegments(materialId: string) {
+    const response = await this.#fetch(`files/${materialId}/segments`, {});
+    return response.json() as Promise<Segment[]>;
+  }
+
+  async getOrganizationDeliveries(orgId: string) {
+    const response = await this.#fetch(
+      `organizations/${orgId}/shows/deliveries`,
+      {},
+    );
+    return response.json() as Promise<DeliveryApi>;
+  }
+
+  async getFormats(orgId: string) {
+    const response = await this.#fetch(`organizations/${orgId}/formats`, {});
+    return response.json() as Promise<Format[]>;
+  }
+
+  async getSubtitleFormats(orgId: string) {
+    const response = await this.#fetch(
+      `organizations/${orgId}/subtitleFormats`,
+      {},
+    );
+    return response.json() as Promise<SubtitleFormat[]>;
+  }
+
+  setAudioMapping(fileId : string, mappingPayload : AudioMappingPayload): Promise<Response> {
+    return this.#fetch(
+      `files/${fileId}/audioMapping`,
+      {
+        bodyJsonObject: mappingPayload,
+        method: "POST",
+      },
+    );
+  }
+
   #throwError(message: string, response: Response): void {
     console.error(message);
     console.error(response);
     throw new Error(message);
+  }
+  proxy(
+    partialUrl: string,
+    optionalArg?: {
+      method?: string;
+      bodyJsonObject?: unknown;
+      contentType?: string;
+      cookieHeader?: Record<string, string>;
+    },
+  ): Promise<Response> {
+    return this.#fetch(partialUrl, optionalArg || {});
   }
   #fetch(
     partialUrl: string,
@@ -393,13 +445,11 @@ export class Nomalab {
       "Content-Type",
       optionalArg.contentType ?? "application/json",
     );
-    myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
-    if (optionalArg.cookieHeader) {
-      myHeaders.append(
-        "Cookie",
-        `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
-      );
-    }
+    myHeaders.append(
+      "Cookie",
+      `sessionJwt=${this.#apiToken}`,
+    );
+
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {
