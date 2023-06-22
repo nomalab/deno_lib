@@ -152,15 +152,15 @@ export interface SubtitleWarning {
 }
 
 export interface SubtitleFormat {
-  organizationId: string;
-  organizationName: string;
-  subtitleFormats: FormatElement[];
+  id: string;
+  name: string;
+  formats: string;
 }
 export interface DeliverPayload {
   format: string;
   versionMapping: Formats.Mapping;
-  timecodeOut: string | null;
-  timecodeIn: string | null;
+  timecodeOut?: string;
+  timecodeIn?: string;
   segments?: string[];
   subtitles: DeliverSubtitle | null;
   targetOrg: string;

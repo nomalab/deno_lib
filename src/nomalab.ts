@@ -130,6 +130,7 @@ export class Nomalab {
     const setCookie = getSetCookies(response.headers)[0];
     assert(setCookie, "No cookie");
     this.#apiToken = setCookie.value;
+    getSetCookies(response.headers)[0];
 
     // To avoid leak since we don't use the body of the response
     await response.body?.cancel();
@@ -274,27 +275,14 @@ export class Nomalab {
   }
 
   // Deliver with starting a transcode
-  async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
-    const response = await this.#fetch(
-      `broadcastables/${showId}/deliver`,
+  deliver(broadcastableId: string, deliverPayload: DeliverPayload): Promise<Response> {
+    return this.#fetch(
+      `broadcastables/${broadcastableId}/deliver`,
       {
         bodyJsonObject: deliverPayload,
         method: "POST",
       },
-    );
-    if (!response.ok) {
-      if (response.status == 409) {
-        throw new AlreadyPresentDeliverable(
-          "Can't deliver because of an already present deliverable.",
-        );
-      } else {
-        this.#throwError(
-          `ERROR - Can't deliver with payload.${deliverPayload}`,
-          response,
-        );
-      }
-    }
-    return Promise.resolve() as Promise<void>;
+    ) as Promise<Response>;
   }
 
   async triggerUpload(broadcastableId: string) {
@@ -457,19 +445,11 @@ export class Nomalab {
       "Content-Type",
       optionalArg.contentType ?? "application/json",
     );
-    myHeaders.append("Authorization", `Bearer ${this.#apiToken} `);
-    if (optionalArg.cookieHeader) {
-      myHeaders.append(
-        "Cookie",
-        `sessionJwt=${optionalArg.cookieHeader["sessionJwt"]}`,
-      );
-    } else {
-      myHeaders.append(
-        "Cookie",
-        `sessionJwt=${this.#apiToken}`,
-      );
+    myHeaders.append(
+      "Cookie",
+      `sessionJwt=${this.#apiToken}`,
+    );
 
-    }
     const request = new Request(
       `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
       {
