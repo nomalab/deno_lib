@@ -1,0 +1,15 @@
+{
+  "name": "deno_lib",
+  "version": "1.0.0",
+  "description": "Deno lib to handle Nomalab API with deno",
+  "main": "mod.js",
+  "types": "mod.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
+}

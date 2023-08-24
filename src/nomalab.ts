@@ -1,10 +1,10 @@
 import {
+  AudioMappingPayload,
   CopyToBroadcastable,
   DeliverableOrganization,
   Deliveries,
   DeliverPayload,
   DeliveryApi,
-  AudioMappingPayload,
   Job,
   MeUser,
   Node,
@@ -16,10 +16,9 @@ import {
   Show,
   ShowClass,
   ShowKind,
-  SubtitleFormat,
+  SubtitleFormatApi,
 } from "./types.ts";
 import { Format } from "./formats.ts";
-import { assert, getSetCookies } from "./deps.ts";
 
 export class AlreadyPresentDeliverable extends Error {
   constructor(msg: string) {
@@ -28,30 +27,22 @@ export class AlreadyPresentDeliverable extends Error {
   }
 }
 export class Nomalab {
-  #context: string;
-  #apiToken: string;
+  // both unset in the front-end
+  #context?: string;
+  #apiToken?: string;
 
-  constructor(context: string, apiToken: string) {
+  constructor(context?: string, apiToken?: string) {
     this.#context = context;
     this.#apiToken = apiToken;
   }
 
   async me(): Promise<MeUser> {
     const response = await this.#fetch(`users/me`, {});
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't load user infos.`, response);
-    }
     return response.json() as Promise<MeUser>;
   }
 
   async getShow(showUuid: string): Promise<Show> {
     const response = await this.#fetch(`shows/${showUuid}`, {});
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find show with id ${showUuid}.`,
-        response,
-      );
-    }
     return response.json() as Promise<Show>;
   }
 
@@ -59,9 +50,7 @@ export class Nomalab {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
-      {},
     );
-    if (!response.ok) this.#throwError(`ERROR - Can't find root.`, response);
     return response.json() as Promise<NodeClass[]>;
   }
 
@@ -75,14 +64,14 @@ export class Nomalab {
       organizationId,
       "hierarchy",
       {
-        name,
-        parent,
-        kind,
+        method: "POST",
+        bodyJsonObject: {
+          name,
+          parent,
+          kind,
+        },
       },
     );
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't create ${kind} ${name}.`, response);
-    }
     return response.json() as Promise<NodeClass>;
   }
 
@@ -98,10 +87,6 @@ export class Nomalab {
         kind,
       },
     });
-
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
-    }
     const { id } = await response.json() as ShowClass;
     return id;
   }
@@ -114,7 +99,7 @@ export class Nomalab {
       bodyJsonObject?: unknown;
       contentType?: string;
       cookieHeader?: Record<string, string>;
-    },
+    } = {},
   ): Promise<Response> {
     const response = await this.#fetch(
       `users/switch`,
@@ -123,14 +108,15 @@ export class Nomalab {
         method: "POST",
       },
     );
-    if (!response.ok) {
-      this.#throwError(`Can't switch to org ${organizationId}`, response);
-    }
 
-    const setCookie = getSetCookies(response.headers)[0];
-    assert(setCookie, "No cookie");
-    this.#apiToken = setCookie.value;
-    getSetCookies(response.headers)[0];
+    if (this.#apiToken && response.headers.has("set-cookie")) {
+      response.headers.getSetCookie().forEach((sc) => {
+        const [name, value] = sc.split("=");
+        if (name == "sessionJwt") {
+          this.#apiToken = value;
+        }
+      });
+    }
 
     // To avoid leak since we don't use the body of the response
     await response.body?.cancel();
@@ -143,48 +129,21 @@ export class Nomalab {
 
   async getChildren(nodeUuid: string): Promise<NodeClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/children`, {});
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find children with id ${nodeUuid}.`,
-        response,
-      );
-    }
     return response.json() as Promise<NodeClass[]>;
   }
 
   async getDeliveries(): Promise<Deliveries> {
     const response = await this.#fetch(`shows/deliveries`, {});
-    if (!response.ok) {
-      if (response.status == 409) {
-        throw new AlreadyPresentDeliverable(
-          "Can't deliver because of an already present deliverable.",
-        );
-      } else {
-        this.#throwError(`ERROR - Can't get deliveries.`, response);
-      }
-    }
     return response.json() as Promise<Deliveries>;
   }
 
   async getNode(nodeUuid: string): Promise<Node> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}`, {});
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find node with id ${nodeUuid}.`,
-        response,
-      );
-    }
     return response.json() as Promise<Node>;
   }
 
   async getShowsForNode(nodeUuid: string): Promise<ShowClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/shows`, {});
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - error when retrieving shows for node ${nodeUuid}.`,
-        response,
-      );
-    }
     return response.json() as Promise<ShowClass[]>;
   }
 
@@ -196,20 +155,11 @@ export class Nomalab {
         method: "POST",
       },
     );
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find show with id ${showUuid}.`,
-        response,
-      );
-    }
     return response.json() as Promise<Path[]>;
   }
 
   async getOrganizations(): Promise<Organization[]> {
     const response = await this.#fetch(`organizations`, {});
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't get organizations.`, response);
-    }
     return response.json() as Promise<Organization[]>;
   }
 
@@ -235,30 +185,23 @@ export class Nomalab {
 
   async getJob(jobUuid: string): Promise<Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
-    }
     return response.json() as Promise<Job>;
+  }
+
+  async getSegments(fileId: string): Promise<Segment[]> {
+    const response = await this.#fetch(`files/${fileId}/segments`, {});
+    return response.json() as Promise<Segment[]>;
   }
 
   async s3Upload(payload: CopyToBroadcastable): Promise<void> {
     const url = payload.destRole ? "aws/copyFromExt" : "aws/copy";
-    const response = await this.#fetch(
+    await this.#fetch(
       url,
       {
         bodyJsonObject: payload,
         method: "POST",
       },
     );
-
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't make a s3 copy with payload.${
-          JSON.stringify(payload)
-        } on url ${url}.`,
-        response,
-      );
-    }
 
     return Promise.resolve();
   }
@@ -268,14 +211,14 @@ export class Nomalab {
       `shows/${showId}/accept`,
       { method: "POST" },
     );
-    if (!response.ok) {
-      this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
-    }
     return response.json() as Promise<ShowClass>;
   }
 
   // Deliver with starting a transcode
-  deliver(broadcastableId: string, deliverPayload: DeliverPayload): Promise<Response> {
+  deliver(
+    broadcastableId: string,
+    deliverPayload: DeliverPayload,
+  ): Promise<Response> {
     return this.#fetch(
       `broadcastables/${broadcastableId}/deliver`,
       {
@@ -286,23 +229,10 @@ export class Nomalab {
   }
 
   async triggerUpload(broadcastableId: string) {
-    const response = await this.#fetch(
+    await this.#fetch(
       `broadcastables/${broadcastableId}/delivery`,
       { method: "POST", bodyJsonObject: {} },
     );
-    console.log(response.headers);
-    if (!response.ok) {
-      if (response.status == 409) {
-        throw new AlreadyPresentDeliverable(
-          "Can't deliver because of an already present deliverable.",
-        );
-      } else {
-        this.#throwError(
-          `ERROR - Can't accept and deliver show. [${broadcastableId}]`,
-          response,
-        );
-      }
-    }
     return Promise.resolve() as Promise<void>;
   }
 
@@ -312,22 +242,10 @@ export class Nomalab {
     showId: string,
   ): Promise<void> {
     await this.accept(showId).then(async () => {
-      const response = await this.#fetch(
+      await this.#fetch(
         `broadcastables/${broadcastableId}/delivery`,
         { method: "POST", bodyJsonObject: {} },
       );
-      if (!response.ok) {
-        if (response.status == 409) {
-          throw new AlreadyPresentDeliverable(
-            "Can't deliver because of an already present deliverable.",
-          );
-        } else {
-          this.#throwError(
-            `ERROR - Can't accept and deliver show. [${showId}]`,
-            response,
-          );
-        }
-      }
       return Promise.resolve();
     });
   }
@@ -343,18 +261,21 @@ export class Nomalab {
         method: "POST",
       },
     );
-    if (!response.ok) {
-      if (response.status == 409) {
-        throw new AlreadyPresentDeliverable(
-          "Can't deliver because of an already present deliverable.",
-        );
-      } else {
-        this.#throwError(
-          `ERROR - Can't deliver without transcoding to org id <${targetOrgId}>`,
-          response,
-        );
-      }
-    }
+    return response.json() as Promise<ShowClass>;
+  }
+
+  async copyToShow(
+    broadcastableId: string,
+    target: string,
+    subtitles?: SubtitleFormatApi,
+  ): Promise<ShowClass> {
+    const response = await this.#fetch(
+      `broadcastables/${broadcastableId}/copyToShow`,
+      {
+        bodyJsonObject: { target, subtitles },
+        method: "POST",
+      },
+    );
     return response.json() as Promise<ShowClass>;
   }
 
@@ -365,12 +286,6 @@ export class Nomalab {
         contentType: "application/xml",
       },
     );
-    if (!response.ok) {
-      this.#throwError(
-        `ERROR - Can't find manifest with proxyId ${proxyId}.`,
-        response,
-      );
-    }
     return response.blob() as Promise<Blob>;
   }
 
@@ -387,7 +302,6 @@ export class Nomalab {
   async getOrganizationDeliveries(orgId: string) {
     const response = await this.#fetch(
       `organizations/${orgId}/shows/deliveries`,
-      {},
     );
     return response.json() as Promise<DeliveryApi>;
   }
@@ -400,12 +314,14 @@ export class Nomalab {
   async getSubtitleFormats(orgId: string) {
     const response = await this.#fetch(
       `organizations/${orgId}/subtitleFormats`,
-      {},
     );
-    return response.json() as Promise<SubtitleFormat[]>;
+    return response.json() as Promise<SubtitleFormatApi[]>;
   }
 
-  setAudioMapping(fileId : string, mappingPayload : AudioMappingPayload): Promise<Response> {
+  setAudioMapping(
+    fileId: string,
+    mappingPayload: AudioMappingPayload,
+  ): Promise<Response> {
     return this.#fetch(
       `files/${fileId}/audioMapping`,
       {
@@ -415,11 +331,6 @@ export class Nomalab {
     );
   }
 
-  #throwError(message: string, response: Response): void {
-    console.error(message);
-    console.error(response);
-    throw new Error(message);
-  }
   proxy(
     partialUrl: string,
     optionalArg?: {
@@ -431,6 +342,7 @@ export class Nomalab {
   ): Promise<Response> {
     return this.#fetch(partialUrl, optionalArg || {});
   }
+
   #fetch(
     partialUrl: string,
     optionalArg: {
@@ -438,35 +350,54 @@ export class Nomalab {
       bodyJsonObject?: unknown;
       contentType?: string;
       cookieHeader?: Record<string, string>;
-    },
+    } = {},
   ): Promise<Response> {
     const myHeaders = new Headers();
     myHeaders.append(
       "Content-Type",
       optionalArg.contentType ?? "application/json",
     );
-    myHeaders.append(
-      "Cookie",
-      `sessionJwt=${this.#apiToken}`,
-    );
+
+    if (this.#apiToken) {
+      myHeaders.append(
+        "Cookie",
+        `sessionJwt=${this.#apiToken}`,
+      );
+    }
 
     const request = new Request(
-      `https://${this.#contextSubDomain()}.nomalab.com/v3/${partialUrl}`,
+      `${this.#contextSubDomain()}/v3/${partialUrl}`,
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
         body: (optionalArg.bodyJsonObject === undefined)
           ? null
           : JSON.stringify(optionalArg.bodyJsonObject),
-        credentials: "include",
+        credentials: this.#context ? "include" : undefined,
       },
     );
-    return fetch(request);
+    return fetch(request).then((response) => {
+      if (response.ok) {
+        return response;
+      } else {
+        throw response;
+      }
+    });
   }
+
   #contextSubDomain(): string {
-    if (this.#context == "www") return "app";
-    else {
-      return `app-${this.#context}`;
+    if (this.#context) {
+      const ctx = this.#context == "www" ? "app" : `app-${this.#context}`;
+      return `https://${ctx}.nomalab.com`;
+    } else {
+      // front-end just wants to keep its own context
+      return "";
     }
   }
+}
+
+declare global {
+	interface Headers {
+		getSetCookie(): string[];
+	}
 }

@@ -152,10 +152,17 @@ export interface SubtitleWarning {
 }
 
 export interface SubtitleFormat {
+  organizationId: string;
+  organizationName: string;
+  subtitleFormats: FormatElement[];
+}
+
+export interface SubtitleFormatApi {
   id: string;
   name: string;
-  formats: string;
+  format: string;
 }
+
 export interface DeliverPayload {
   format: string;
   versionMapping: Formats.Mapping;
@@ -189,33 +196,6 @@ export interface DeliveryTranscoding {
   warning: TranscodeWarning[];
 }
 
-export enum Phase {
-  Encoding = "Encoding",
-  Finished = "Finished",
-  Packaging = "Packaging",
-  Waiting = "Waiting",
-}
-
-export interface FileClass {
-  state: string;
-  stateExpireAt: null;
-  id: string;
-  createdAt: string;
-  name: string;
-  size: number;
-  mimeType: null | string;
-  bucket: string;
-  key: string;
-  kind: string;
-  uploaderId: null | string;
-  upload: Upload | null;
-  uploadedAt: null | string;
-  verification: Verification | null;
-  sourceId: null | string;
-  transcoding: FileTranscoding | null;
-  format: null;
-}
-
 export interface FileTranscoding {
   file: string;
   phase: Phase;
@@ -224,20 +204,6 @@ export interface FileTranscoding {
   progressedAt: string;
   log: null | string;
   warning: unknown[];
-}
-
-export interface Upload {
-  file: string;
-  user: string;
-  progress: number;
-  progressedAt: string;
-  pausedAt: null;
-  completedAt: string;
-  error: null;
-  s3Id: string;
-  speed: number;
-  secondsLeft: number;
-  source: string;
 }
 
 export interface Verification {
@@ -450,7 +416,7 @@ export interface Proxies {
 
 export interface Segment {
   id: string;
-  label: Formats.SegmentLabel;
+  label: string | Formats.SegmentLabel;
   creator: Creator;
   createdAt: string;
   file: string;
