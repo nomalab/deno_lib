@@ -397,7 +397,7 @@ export class Nomalab {
 }
 
 declare global {
-	interface Headers {
-		getSetCookie(): string[];
-	}
+  interface Headers {
+    getSetCookie(): string[];
+  }
 }
