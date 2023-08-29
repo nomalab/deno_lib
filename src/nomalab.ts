@@ -37,12 +37,12 @@ export class Nomalab {
   }
 
   async me(): Promise<MeUser> {
-    const response = await this.#fetch(`users/me`, {});
+    const response = await this.#fetch(`users/me`);
     return response.json() as Promise<MeUser>;
   }
 
   async getShow(showUuid: string): Promise<Show> {
-    const response = await this.#fetch(`shows/${showUuid}`, {});
+    const response = await this.#fetch(`shows/${showUuid}`);
     return response.json() as Promise<Show>;
   }
 
@@ -111,7 +111,7 @@ export class Nomalab {
 
     if (this.#apiToken && response.headers.has("set-cookie")) {
       response.headers.getSetCookie().forEach((sc) => {
-        const [name, value] = sc.split("=");
+        const [name, value, ..._xs] = sc.split(";")[0]?.split("=");
         if (name == "sessionJwt") {
           this.#apiToken = value;
         }
@@ -359,6 +359,7 @@ export class Nomalab {
     );
 
     if (this.#apiToken) {
+      myHeaders.append("Authorization", `Bearer ${this.#apiToken}`);
       myHeaders.append(
         "Cookie",
         `sessionJwt=${this.#apiToken}`,
@@ -376,11 +377,17 @@ export class Nomalab {
         credentials: this.#context ? "include" : undefined,
       },
     );
-    return fetch(request).then((response) => {
+
+    console.log(request.url);
+    console.log(this.#contextSubDomain());
+    console.log(this.#apiToken);
+    console.log(myHeaders);
+
+    return fetch(request).then(async (response) => {
       if (response.ok) {
         return response;
       } else {
-        throw response;
+        throw (await response.json());
       }
     });
   }

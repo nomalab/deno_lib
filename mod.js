@@ -16,11 +16,11 @@ class Nomalab {
         this.#apiToken = apiToken;
     }
     async me() {
-        const response = await this.#fetch(`users/me`, {});
+        const response = await this.#fetch(`users/me`);
         return response.json();
     }
     async getShow(showUuid) {
-        const response = await this.#fetch(`shows/${showUuid}`, {});
+        const response = await this.#fetch(`shows/${showUuid}`);
         return response.json();
     }
     async getRoots(organizationId) {
@@ -58,7 +58,7 @@ class Nomalab {
         });
         if (this.#apiToken && response.headers.has("set-cookie")) {
             response.headers.getSetCookie().forEach((sc)=>{
-                const [name, value] = sc.split("=");
+                const [name, value, ..._xs] = sc.split(";")[0]?.split("=");
                 if (name == "sessionJwt") {
                     this.#apiToken = value;
                 }
@@ -218,6 +218,7 @@ class Nomalab {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", optionalArg.contentType ?? "application/json");
         if (this.#apiToken) {
+            myHeaders.append("Authorization", `Bearer ${this.#apiToken}`);
             myHeaders.append("Cookie", `sessionJwt=${this.#apiToken}`);
         }
         const request = new Request(`${this.#contextSubDomain()}/v3/${partialUrl}`, {
@@ -226,11 +227,15 @@ class Nomalab {
             body: optionalArg.bodyJsonObject === undefined ? null : JSON.stringify(optionalArg.bodyJsonObject),
             credentials: this.#context ? "include" : undefined
         });
-        return fetch(request).then((response)=>{
+        console.log(request.url);
+        console.log(this.#contextSubDomain());
+        console.log(this.#apiToken);
+        console.log(myHeaders);
+        return fetch(request).then(async (response)=>{
             if (response.ok) {
                 return response;
             } else {
-                throw response;
+                throw await response.json();
             }
         });
     }
