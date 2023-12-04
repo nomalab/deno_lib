@@ -504,18 +504,59 @@ export interface FluffyStream {
   subtitleType: string;
 }
 
-export interface Metadata {
+export interface Metadata extends partialMetadata {
   show: string;
-  firstBroadcastedAt: null;
-  broadcasterShowId: null;
+}
+
+export interface partialMetadata {
+  firstBroadcastedAt?: Date | null;
+  broadcasterShowId?: string | null;
   enableAutoAccept: boolean;
-  productionCompanyName: null;
-  productionYear: null;
-  programType: null;
-  fileType: null;
-  fileFormat: null;
-  aspectRatio: null;
-  textedVideoType: null;
+  productionCompanyName?: string | null;
+  productionYear?: number | null;
+  programType?: ProgramType | null;
+  fileType?: FileType | null;
+  fileFormat?: FileFormat | null;
+  aspectRatio?: AspectRatio | null;
+  textedVideoType?: TextedVideoType | null;
+}
+
+export type ProgramType =
+  | "Program"
+  | "Trailer"
+  | "Teaser"
+  | "Neutral bases";
+
+export type FileFormat =
+  | "SD"
+  | "HD"
+  | "UHD"
+  | "2k"
+  | "4k"
+  | "DCP";
+
+export type AspectRatio =
+  | "1.33"
+  | "1.66"
+  | "1.77"
+  | "1.85"
+  | "2.00"
+  | "2.20"
+  | "2.35"
+  | "2.39"
+  | "2.40";
+
+export enum TextedVideoType {
+  Full = "Full",
+  Partial = "Partial",
+  InsertOnly = "InsertOnly",
+}
+
+export enum FileType {
+  Video = "Video",
+  Audio = "Audio",
+  Subtitle = "Subtitle",
+  Extra = "Extra",
 }
 
 export interface ShowOrganization {

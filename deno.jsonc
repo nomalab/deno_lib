@@ -8,5 +8,6 @@
     "files": {
       "include": ["src/"]
     }
-  }
+  },
+  "lock": false
 }
