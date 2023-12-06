@@ -1,17 +1,4 @@
-import {
-  CopyToBroadcastable,
-  Deliveries,
-  DeliverPayload,
-  Job,
-  Node,
-  NodeClass,
-  NodeKind,
-  Organization,
-  Path,
-  Show,
-  ShowClass,
-  ShowKind,
-} from "./types.ts";
+import * as types from "./types.ts";
 import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
 
 export class AlreadyPresentDeliverable extends Error {
@@ -29,7 +16,7 @@ export class Nomalab {
     this.#apiToken = apiToken;
   }
 
-  async getShow(showUuid: string): Promise<Show> {
+  async getShow(showUuid: string): Promise<types.Show> {
     const response = await this.#fetch(`shows/${showUuid}`, {});
     if (!response.ok) {
       this.#throwError(
@@ -37,24 +24,24 @@ export class Nomalab {
         response,
       );
     }
-    return response.json() as Promise<Show>;
+    return response.json() as Promise<types.Show>;
   }
 
-  async getRoots(organizationId: string): Promise<NodeClass[]> {
+  async getRoots(organizationId: string): Promise<types.NodeClass[]> {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
     );
     if (!response.ok) this.#throwError(`ERROR - Can't find root.`, response);
-    return response.json() as Promise<NodeClass[]>;
+    return response.json() as Promise<types.NodeClass[]>;
   }
 
   async createHierarchy(
     organizationId: string,
     name: string,
-    kind: NodeKind,
+    kind: types.NodeKind,
     parent?: string,
-  ): Promise<NodeClass> {
+  ): Promise<types.NodeClass> {
     const response = await this.#requestWithSwitch(
       organizationId,
       "hierarchy",
@@ -68,13 +55,13 @@ export class Nomalab {
     if (!response.ok) {
       this.#throwError(`ERROR - Can't create ${kind} ${name}.`, response);
     }
-    return response.json() as Promise<NodeClass>;
+    return response.json() as Promise<types.NodeClass>;
   }
 
   async createShow(
     nodeId: string,
     name: string,
-    kind: ShowKind,
+    kind: types.ShowKind,
   ): Promise<string> {
     const response = await this.#fetch(`hierarchy/${nodeId}/shows`, {
       method: "POST",
@@ -87,7 +74,7 @@ export class Nomalab {
     if (!response.ok) {
       this.#throwError(`ERROR - Can't create show ${kind} ${name}.`, response);
     }
-    const { id } = await response.json() as ShowClass;
+    const { id } = await response.json() as types.ShowClass;
     return id;
   }
 
@@ -127,7 +114,25 @@ export class Nomalab {
     );
   }
 
-  async getChildren(nodeUuid: string): Promise<NodeClass[]> {
+  async updateMetadata(
+    show: string,
+    metadata: types.NewMetadata,
+  ): Promise<types.Metadata> {
+    const response = await this.#fetch(`shows/${show}/metadata`, {
+      method: "PUT",
+      bodyJsonObject: metadata,
+    });
+
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't update metadata for show ${show}.`,
+        response,
+      );
+    }
+    return await response.json() as types.Metadata;
+  }
+
+  async getChildren(nodeUuid: string): Promise<types.NodeClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/children`, {});
     if (!response.ok) {
       this.#throwError(
@@ -135,10 +140,10 @@ export class Nomalab {
         response,
       );
     }
-    return response.json() as Promise<NodeClass[]>;
+    return response.json() as Promise<types.NodeClass[]>;
   }
 
-  async getDeliveries(): Promise<Deliveries> {
+  async getDeliveries(): Promise<types.Deliveries> {
     const response = await this.#fetch(`shows/deliveries`, {});
     if (!response.ok) {
       if (response.status == 409) {
@@ -149,10 +154,10 @@ export class Nomalab {
         this.#throwError(`ERROR - Can't get deliveries.`, response);
       }
     }
-    return response.json() as Promise<Deliveries>;
+    return response.json() as Promise<types.Deliveries>;
   }
 
-  async getNode(nodeUuid: string): Promise<Node> {
+  async getNode(nodeUuid: string): Promise<types.Node> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}`, {});
     if (!response.ok) {
       this.#throwError(
@@ -160,10 +165,10 @@ export class Nomalab {
         response,
       );
     }
-    return response.json() as Promise<Node>;
+    return response.json() as Promise<types.Node>;
   }
 
-  async getShowsForNode(nodeUuid: string): Promise<ShowClass[]> {
+  async getShowsForNode(nodeUuid: string): Promise<types.ShowClass[]> {
     const response = await this.#fetch(`hierarchy/${nodeUuid}/shows`, {});
     if (!response.ok) {
       this.#throwError(
@@ -171,10 +176,10 @@ export class Nomalab {
         response,
       );
     }
-    return response.json() as Promise<ShowClass[]>;
+    return response.json() as Promise<types.ShowClass[]>;
   }
 
-  async getPath(showUuid: string): Promise<Path[]> {
+  async getPath(showUuid: string): Promise<types.Path[]> {
     const response = await this.#fetch(
       `admin/shows/path`,
       {
@@ -188,18 +193,18 @@ export class Nomalab {
         response,
       );
     }
-    return response.json() as Promise<Path[]>;
+    return response.json() as Promise<types.Path[]>;
   }
 
-  async getOrganizations(): Promise<Organization[]> {
+  async getOrganizations(): Promise<types.Organization[]> {
     const response = await this.#fetch(`organizations`, {});
     if (!response.ok) {
       this.#throwError(`ERROR - Can't get organizations.`, response);
     }
-    return response.json() as Promise<Organization[]>;
+    return response.json() as Promise<types.Organization[]>;
   }
 
-  async getOrganization(organizationId: string): Promise<Organization> {
+  async getOrganization(organizationId: string): Promise<types.Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.id == organizationId;
     });
@@ -209,7 +214,9 @@ export class Nomalab {
     return Promise.resolve(organisation[0]);
   }
 
-  async getOrganizationByName(organizationName: string): Promise<Organization> {
+  async getOrganizationByName(
+    organizationName: string,
+  ): Promise<types.Organization> {
     const organisation = (await this.getOrganizations()).filter((org) => {
       return org.name == organizationName;
     });
@@ -219,15 +226,15 @@ export class Nomalab {
     return Promise.resolve(organisation[0]);
   }
 
-  async getJob(jobUuid: string): Promise<Job> {
+  async getJob(jobUuid: string): Promise<types.Job> {
     const response = await this.#fetch(`jobs/${jobUuid}`, {});
     if (!response.ok) {
       this.#throwError(`ERROR - Can't find job with id ${jobUuid}.`, response);
     }
-    return response.json() as Promise<Job>;
+    return response.json() as Promise<types.Job>;
   }
 
-  async s3Upload(payload: CopyToBroadcastable): Promise<void> {
+  async s3Upload(payload: types.CopyToBroadcastable): Promise<void> {
     const url = payload.destRole ? "aws/copyFromExt" : "aws/copy";
     const response = await this.#fetch(
       url,
@@ -249,7 +256,7 @@ export class Nomalab {
     return Promise.resolve();
   }
 
-  async accept(showId: string): Promise<ShowClass> {
+  async accept(showId: string): Promise<types.ShowClass> {
     const response = await this.#fetch(
       `shows/${showId}/accept`,
       { method: "POST" },
@@ -257,11 +264,14 @@ export class Nomalab {
     if (!response.ok) {
       this.#throwError(`ERROR - Can't accept show. ${showId}`, response);
     }
-    return response.json() as Promise<ShowClass>;
+    return response.json() as Promise<types.ShowClass>;
   }
 
   // Deliver with starting a transcode
-  async deliver(showId: string, deliverPayload: DeliverPayload): Promise<void> {
+  async deliver(
+    showId: string,
+    deliverPayload: types.DeliverPayload,
+  ): Promise<void> {
     const response = await this.#fetch(
       `broadcastables/${showId}/deliver`,
       {
@@ -335,7 +345,7 @@ export class Nomalab {
   async deliverWithoutTranscoding(
     broadcastableId: string,
     targetOrgId: string,
-  ): Promise<ShowClass> {
+  ): Promise<types.ShowClass> {
     const response = await this.#fetch(
       `broadcastables/${broadcastableId}/copyToOrganization`,
       {
@@ -355,7 +365,7 @@ export class Nomalab {
         );
       }
     }
-    return response.json() as Promise<ShowClass>;
+    return response.json() as Promise<types.ShowClass>;
   }
 
   async getManifest(proxyId: string): Promise<Blob> {
