@@ -504,21 +504,31 @@ export interface FluffyStream {
   subtitleType: string;
 }
 
-export interface Metadata extends partialMetadata {
+export interface Metadata {
   show: string;
+  firstBroadcastedAt: Date | null;
+  broadcasterShowId: string | null;
+  enableAutoAccept: boolean;
+  productionCompanyName: string | null;
+  productionYear: number | null;
+  programType: ProgramType | null;
+  fileType: FileType | null;
+  fileFormat: FileFormat | null;
+  aspectRatio: AspectRatio | null;
+  textedVideoType: TextedVideoType | null;
 }
 
-export interface partialMetadata {
-  firstBroadcastedAt?: Date | null;
-  broadcasterShowId?: string | null;
+export interface NewMetadata {
+  firstBroadcastedAt?: Date;
+  broadcasterShowId?: string;
   enableAutoAccept: boolean;
-  productionCompanyName?: string | null;
-  productionYear?: number | null;
-  programType?: ProgramType | null;
-  fileType?: FileType | null;
-  fileFormat?: FileFormat | null;
-  aspectRatio?: AspectRatio | null;
-  textedVideoType?: TextedVideoType | null;
+  productionCompanyName?: string;
+  productionYear?: number;
+  programType?: ProgramType;
+  fileType?: FileType;
+  fileFormat?: FileFormat;
+  aspectRatio?: AspectRatio;
+  textedVideoType?: TextedVideoType;
 }
 
 export type ProgramType =

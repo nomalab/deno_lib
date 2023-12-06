@@ -116,7 +116,7 @@ export class Nomalab {
 
   async updateMetadata(
     show: string,
-    metadata: types.partialMetadata,
+    metadata: types.NewMetadata,
   ): Promise<types.Metadata> {
     const response = await this.#fetch(`shows/${show}/metadata`, {
       method: "PUT",
