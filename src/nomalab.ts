@@ -11,11 +11,11 @@ import {
   NodeClass,
   NodeKind,
   Organization,
-  Path,
   Segment,
   Show,
   ShowClass,
   ShowKind,
+  ShowPath,
   SubtitleFormatApi,
 } from "./types.ts";
 import { Format } from "./formats.ts";
@@ -147,7 +147,7 @@ export class Nomalab {
     return response.json() as Promise<ShowClass[]>;
   }
 
-  async getPath(showUuid: string): Promise<Path[]> {
+  async getPath(showUuid: string): Promise<ShowPath[]> {
     const response = await this.#fetch(
       `admin/shows/path`,
       {
@@ -155,7 +155,7 @@ export class Nomalab {
         method: "POST",
       },
     );
-    return response.json() as Promise<Path[]>;
+    return response.json() as Promise<ShowPath[]>;
   }
 
   async getOrganizations(): Promise<Organization[]> {

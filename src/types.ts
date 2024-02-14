@@ -18,8 +18,8 @@ export interface MeUser {
 export interface Job {
   id: string;
   createdAt: string;
-  startedAt: null;
-  completedAt: string;
+  startedAt: null | string;
+  completedAt: null | string;
   show: string;
   organization: string;
   requester: string;
@@ -29,14 +29,15 @@ export interface Job {
     | "QC"
     | "SimpleTranscode"
     | "Spotcheck";
-  externalJobId: null;
-  format: string;
-  startedBy: null;
-  completedBy: null;
+  externalJobId: null | string;
+  format: null | string;
+  startedBy: null | string;
+  completedBy: null | string;
   acknowledge: boolean;
-  acknowledgedBy: null;
+  acknowledgedBy: null | string;
 }
-export interface Path {
+
+export interface ShowPath {
   showId: string;
   path: PathElement[];
 }
@@ -56,13 +57,12 @@ export interface Show {
   organization: ShowOrganization;
   channels: unknown[];
   invitations: unknown[];
-  timeline: unknown[];
-  extras: FileWrapper[];
-  activeBroadcastable: ActiveBroadcastable;
-  previousBroadcastables: unknown[];
+  extras: ExtraFile[];
+  activeBroadcastable: BroadcastableApi;
+  previousBroadcastables: BroadcastableApi[];
 }
 
-export interface ActiveBroadcastable {
+export interface BroadcastableApi {
   broadcastable: Broadcastable;
   files: Files;
   comments: unknown[];
@@ -83,13 +83,19 @@ export interface Broadcastable {
 export interface Files {
   material: Material;
   audios: Material[];
-  subtitles: Subtitle[];
+  subtitles: Material[];
 }
 
-export interface FileWrapper {
+export interface ExtraFile {
   file: FileClass;
+  container: null | Container;
+  streams: FileStream[];
+  proxy: null | FileClass;
+  segments: FileSegment[];
 }
-export interface Material extends FileWrapper {
+
+export interface Material {
+  file: FileClass;
   container: Container;
   streams: FileStream[];
   proxies: Proxies;
@@ -142,10 +148,6 @@ export interface DeliveryNode {
   parent: null | string;
 }
 
-export interface Subtitles {
-  subtitle: unknown[];
-}
-
 export interface SubtitleWarning {
   name: string;
   timecode: string;
@@ -189,7 +191,7 @@ export interface Delivery {
 export interface DeliveryTranscoding {
   file: string;
   phase: Phase;
-  progress: number | null | string;
+  progress: null | number;
   startedAt: string;
   progressedAt: string;
   log: null | string;
@@ -507,17 +509,6 @@ export interface FileDataStream {
   timecode?: string;
 }
 
-export interface Subtitle {
-  file: FileClass;
-  container: null;
-  streams: Array<Array<FluffyStream | string>>;
-  proxies: Proxies;
-  reportXml: null;
-  reportPdf: null;
-  deliveries: unknown[];
-  segments: unknown[];
-}
-
 export interface FluffyStream {
   fileId: string;
   index: number;
@@ -813,14 +804,6 @@ export interface FileClass {
   sourceId: null | string;
   transcoding: Transcoding | null;
   format: Formats.Format;
-}
-
-export interface ExtraApi {
-  file: FileClass;
-  proxy: FileClass | null;
-  segments: FileSegment[];
-  container: FileContainer | null;
-  streams: FileStream[];
 }
 
 export interface FileUploads {
