@@ -17,6 +17,7 @@ import {
   ShowKind,
   ShowPath,
   SubtitleFormatApi,
+  SubtitleFormats,
 } from "./types.ts";
 import { Format } from "./formats.ts";
 
@@ -292,6 +293,17 @@ export class Nomalab {
   async getDeliverableOrgs() {
     const response = await this.#fetch(`organizations/deliverables`, {});
     return response.json() as Promise<DeliverableOrganization[]>;
+  }
+
+  async getSubtitleFormatsList(): Promise<SubtitleFormats> {
+    const response = await this.#fetch(`subtitleFormats`, {});
+    return response.json() as Promise<SubtitleFormats>;
+  }
+
+  #throwError(message: string, response: Response): void {
+    console.error(message);
+    console.error(response);
+    throw new Error(message);
   }
 
   async getFileSegments(materialId: string) {
