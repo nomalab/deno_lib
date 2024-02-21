@@ -11,6 +11,7 @@ import {
   Show,
   ShowClass,
   ShowKind,
+  SubtitleFormats,
 } from "./types.ts";
 import * as mod from "https://deno.land/std@0.148.0/http/cookie.ts";
 
@@ -372,6 +373,17 @@ export class Nomalab {
       );
     }
     return response.blob() as Promise<Blob>;
+  }
+
+  async getSubtitleFormatsList(): Promise<SubtitleFormats> {
+    const response = await this.#fetch(`subtitleFormats`, {});
+    if (!response.ok) {
+      this.#throwError(
+        `ERROR - Can't find subtitleFormatsList .`,
+        response,
+      );
+    }
+    return response.json() as Promise<SubtitleFormats>;
   }
 
   #throwError(message: string, response: Response): void {
