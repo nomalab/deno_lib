@@ -295,9 +295,9 @@ export class Nomalab {
     return response.json() as Promise<DeliverableOrganization[]>;
   }
 
-  async getSubtitleFormatsList(): Promise<SubtitleFormats> {
+  async getSubtitleFormatsList(): Promise<SubtitleFormats[]> {
     const response = await this.#fetch(`subtitleFormats`, {});
-    return response.json() as Promise<SubtitleFormats>;
+    return response.json() as Promise<SubtitleFormats[]>;
   }
 
   #throwError(message: string, response: Response): void {
