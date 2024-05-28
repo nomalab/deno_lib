@@ -1,12 +1,11 @@
 {
+  "imports": {
+    "std/": "https://deno.land/std@0.199.0/"
+  },
   "lint": {
-    "files": {
-      "include": ["src/"]
-    }
+    "include": ["src/"]
   },
   "fmt": {
-    "files": {
-      "include": ["src/"]
-    }
+    "include": ["src/"]
   }
 }

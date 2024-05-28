@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "sourceMap": true,
+      "noImplicitAny": true,
+      "module": "es6",
+      "moduleResolution": "nodenext",
+      "target": "es2021",
+      "noEmit": true,
+      "allowImportingTsExtensions": true
+    },
+    "include": ["mod.ts", "src/**/*"]
+  }
