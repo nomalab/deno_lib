@@ -803,6 +803,10 @@ export interface FileLike {
 
 export enum BroadcastableFileKind {
   ProxyManifest = "ProxyManifest",
+  ProxyImfManifest = "ProxyImfManifest",
+  ProxyDcpManifest = "ProxyDcpManifest",
+  ProxyDcdmManifest = "ProxyDcdmManifest",
+  ProxyAudioMergeManifest = "ProxyAudioMergeManifest",
   ProxyDashVideo = "ProxyDashVideo",
   ProxyAudio = "ProxyAudio",
   ProxySubtitle = "ProxySubtitle",
