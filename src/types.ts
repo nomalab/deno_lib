@@ -221,7 +221,7 @@ export interface FileTranscoding {
 export interface Verification {
   progress: number;
   error: null;
-  result: Result;
+  result: Result | null;
 }
 
 export interface Result {
