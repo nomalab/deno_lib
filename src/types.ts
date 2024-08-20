@@ -1049,3 +1049,11 @@ export enum State {
   Archived = "Archived",
   Restoring = "Restoring",
 }
+
+export interface BroadcastableProxies {
+  imf: FileClass | null;
+  dcp: FileClass | null;
+  dcdm: FileClass | null;
+  audiomerge: FileClass | null;
+  files: { [key: string]: Proxies };
+}
