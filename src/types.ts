@@ -1050,10 +1050,10 @@ export enum State {
   Restoring = "Restoring",
 }
 
-export interface BroadcastableProxies {
-  imf: FileClass | null;
-  dcp: FileClass | null;
-  dcdm: FileClass | null;
-  audiomerge: FileClass | null;
-  files: { [key: string]: Proxies };
-}
+export type BroadcastableProxies = {
+  broadcastable: Record<
+    "imf" | "dcp" | "dcdm" | "audiomerge",
+    FileClass | null
+  >;
+  file: Record<string, { lowres: FileClass | null; hires: FileClass | null }>;
+};
