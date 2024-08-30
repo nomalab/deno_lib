@@ -1051,9 +1051,14 @@ export enum State {
 }
 
 export type BroadcastableProxies = {
-  broadcastable: Record<
-    "imf" | "dcp" | "dcdm" | "audiomerge",
-    FileClass | null
-  >;
-  file: Record<string, { lowres: FileClass | null; hires: FileClass | null }>;
+  broadcastable: {
+    imf?: FileClass;
+    dcp?: FileClass;
+    dcdm?: FileClass;
+    audiomerge?: FileClass;
+  };
+  files: Record<string, {
+    lowres?: FileClass;
+    hires?: FileClass;
+  }>;
 };
