@@ -803,11 +803,16 @@ export interface FileLike {
 
 export enum BroadcastableFileKind {
   ProxyManifest = "ProxyManifest",
+  ProxyImfManifest = "ProxyImfManifest",
+  ProxyDcpManifest = "ProxyDcpManifest",
+  ProxyDcdmManifest = "ProxyDcdmManifest",
+  ProxyAudioMergeManifest = "ProxyAudioMergeManifest",
   ProxyDashVideo = "ProxyDashVideo",
   ProxyAudio = "ProxyAudio",
   ProxySubtitle = "ProxySubtitle",
   VerificationReportPdf = "VerificationReportPdf",
   VerificationReportXml = "VerificationReportXml",
+  DeepProbeReportJson = "DeepProbeReportJson",
   Video = "Video",
   Audio = "Audio",
   Subtitle = "Subtitle",
@@ -1045,3 +1050,16 @@ export enum State {
   Archived = "Archived",
   Restoring = "Restoring",
 }
+
+export type BroadcastableProxies = {
+  broadcastable: {
+    imf?: FileClass;
+    dcp?: FileClass;
+    dcdm?: FileClass;
+    audiomerge?: FileClass;
+  };
+  files: Record<string, {
+    lowres?: FileClass;
+    hires?: FileClass;
+  }>;
+};
