@@ -168,29 +168,11 @@ export interface SubtitleFormatApi {
 export interface SubtitleFormats {
   id: string;
   name: string;
-  format: SubtitleFileFormat;
+  format: Formats.SubtitleFileFormat;
   start_timecode?: string;
-  frame_rate?: FrameRate;
-  display_standard?: SubtitleDisplayStandard;
+  frame_rate?: Formats.FrameRate;
+  display_standard?: Formats.SubtitleDisplayStandard;
   offset?: string;
-}
-
-export enum SubtitleFileFormat {
-  STL = "STL",
-  WebVTT = "WebVTT",
-  SRT = "SRT",
-}
-
-export enum SubtitleDisplayStandard {
-  Open = "Open",
-  Teletext1 = "Teletext1",
-  Teletext2 = "Teletext2",
-}
-
-export interface FrameRate {
-  id: string;
-  numerator: number;
-  denominator: number;
 }
 
 export interface DeliverPayload {
