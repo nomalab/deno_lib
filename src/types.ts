@@ -794,6 +794,7 @@ export enum BroadcastableFileKind {
   ProxySubtitle = "ProxySubtitle",
   VerificationReportPdf = "VerificationReportPdf",
   VerificationReportXml = "VerificationReportXml",
+  DeepProbeReportJson = "DeepProbeReportJson",
   Video = "Video",
   Audio = "Audio",
   Subtitle = "Subtitle",
