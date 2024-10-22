@@ -799,6 +799,7 @@ export enum BroadcastableFileKind {
   Audio = "Audio",
   Subtitle = "Subtitle",
   Extra = "Extra",
+  M2CWorkFile = "M2CWorkFile",
 }
 
 export interface FileClass {
