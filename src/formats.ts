@@ -127,6 +127,7 @@ export enum SubtitleFileFormat {
   STL = "STL",
   WebVTT = "WebVTT",
   SRT = "SRT",
+  ASS = "ASS",
 }
 
 export enum SubtitleDisplayStandard {
