@@ -1046,3 +1046,9 @@ export type BroadcastableProxies = {
     hires?: FileClass;
   }>;
 };
+
+export type StreamInspect = {
+  videos: FileVideoStream[];
+  audios: FileAudioStream[];
+  subtitles: FileSubtitleStream[];
+};
