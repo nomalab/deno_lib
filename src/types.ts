@@ -493,7 +493,7 @@ export interface FileAudioStream {
   sampleFormat: string;
   channels: number;
   bitsPerSample: number;
-  bitRate: number;
+  bitRate: number | null;
   channelLayout: Formats.Layout | null;
   version: Formats.Version | null;
   typeVersion: Formats.TypeVersion | null;
@@ -1039,13 +1039,19 @@ export enum State {
 
 export type BroadcastableProxies = {
   broadcastable: {
-    imf?: FileClass;
-    dcp?: FileClass;
-    dcdm?: FileClass;
-    audiomerge?: FileClass;
+    imf?: FileClass[];
+    dcp?: FileClass[];
+    dcdm?: FileClass[];
+    audiomerge?: FileClass[];
   };
   files: Record<string, {
     lowres?: FileClass;
     hires?: FileClass;
   }>;
+};
+
+export type StreamInspect = {
+  videos: FileVideoStream[];
+  audios: FileAudioStream[];
+  subtitles: FileSubtitleStream[];
 };
