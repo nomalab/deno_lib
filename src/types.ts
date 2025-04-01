@@ -682,6 +682,7 @@ export interface EventClass {
   subtitlesFileName: null | string;
   targetOrganization: null | string;
   transcodeKind?: TranscodeKind;
+  analyzeKind?: "deep_probe" | "segmentation";
   result?: Result | null;
   fileBucket?: string;
   fileKey?: string;
@@ -719,6 +720,9 @@ export enum TranscodeKind {
   Deliverable = "deliverable",
   ProxyLowRes = "proxy_low_res",
   ProxySubtitle = "proxy_subtitle",
+  AudioMerge = "audio_merge",
+  ProxyDcp = "proxy_dcp",
+  ProxyImf = "proxy_imf"
 }
 
 export enum NodeKind {
@@ -738,6 +742,7 @@ export enum EventEnum {
   Lifecycle = "Lifecycle",
   QualityCheck = "QualityCheck",
   Transcode = "Transcode",
+  Analyze = "Analyze",
 }
 
 export interface NodeClass {
