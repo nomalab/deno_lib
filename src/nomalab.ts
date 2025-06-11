@@ -55,6 +55,29 @@ export class Nomalab {
     return response.json() as Promise<NodeClass[]>;
   }
 
+  async getHierarchy(): Promise<Hierarchy[]> {
+    const collections = await this.getCollections();
+    const unitaries = await this.getUnitaries();
+    return [
+      ...collections,
+      ...unitaries,
+    ]
+  }
+
+  async getCollections(): Promise<Collections[]> {
+    const response = await this.#fetch(
+      "collections",
+    );
+    return response.json() as Promise<Collections[]>;
+  }
+
+  async getUnitaries(): Promise<Unitaries[]> {
+    const response = await this.#fetch(
+      "unitaries",
+    );
+    return response.json() as Promise<Unitaries[]>;
+  }
+
   async createHierarchy(
     organizationId: string,
     name: string,
