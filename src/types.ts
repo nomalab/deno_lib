@@ -1060,3 +1060,40 @@ export type StreamInspect = {
   audios: FileAudioStream[];
   subtitles: FileSubtitleStream[];
 };
+
+export type Hierarchy = Collections | Unitaries | Seasons | Episodes;
+
+enum HierarchyRole {
+  Own = "Own",
+  Invited = "Invited",
+}
+
+export type HierarchyNode = {
+  createdAt: string;
+  creator: string;
+  id: string;
+  name: string;
+  state: string;
+};
+
+export type Collections = {
+  organizationName: string;
+  role: HierarchyRole;
+  seasons: Seasons[];
+  collection: HierarchyNode;
+};
+export type Seasons = {
+  episodes: Episodes[];
+  season: HierarchyNode;
+};
+export type Episodes = {
+  shows: ShowClass[];
+  episode: HierarchyNode;
+};
+
+export type Unitaries = {
+  organizationName: string;
+  role: HierarchyRole;
+  shows: ShowClass[];
+  unitary: HierarchyNode;
+};
