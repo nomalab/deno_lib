@@ -386,6 +386,7 @@ export class Nomalab {
       contentType?: string;
       cookieHeader?: Record<string, string>;
     } = {},
+    apiVersion: "v3" | "v4" | "api" = "v3",
   ): Promise<Response> {
     const myHeaders = new Headers();
     myHeaders.append(
@@ -402,7 +403,7 @@ export class Nomalab {
     }
 
     const request = new Request(
-      `${this.#contextSubDomain()}/v3/${partialUrl}`,
+      `${this.#contextSubDomain()}/${apiVersion}/${partialUrl}`,
       {
         method: optionalArg.method ?? "GET",
         headers: myHeaders,
