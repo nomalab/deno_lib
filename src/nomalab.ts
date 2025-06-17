@@ -61,7 +61,7 @@ export class Nomalab {
     return [
       ...collections,
       ...unitaries,
-    ]
+    ];
   }
 
   async getCollections(): Promise<Collections[]> {
@@ -412,11 +412,6 @@ export class Nomalab {
         credentials: this.#context ? "include" : undefined,
       },
     );
-
-    console.log(request.url);
-    console.log(this.#contextSubDomain());
-    console.log(this.#apiToken);
-    console.log(myHeaders);
 
     return fetch(request).then(async (response) => {
       if (response.ok) {
