@@ -336,7 +336,7 @@ export class Nomalab {
 
   async getOrganizationDeliveries(orgId: string) {
     const response = await this.#fetch(
-      `organizations/${orgId}/shows/deliveries`, {}, "v4"
+      `organizations/${orgId}/shows/deliveries`
     );
     return response.json() as Promise<DeliveryApi>;
   }
@@ -374,8 +374,9 @@ export class Nomalab {
       contentType?: string;
       cookieHeader?: Record<string, string>;
     },
+    apiVersion: "v3" | "v4" | "api" = "v3",
   ): Promise<Response> {
-    return this.#fetch(partialUrl, optionalArg || {});
+    return this.#fetch(partialUrl, optionalArg || {}, apiVersion);
   }
 
   #fetch(
