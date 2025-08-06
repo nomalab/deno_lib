@@ -336,7 +336,7 @@ export class Nomalab {
 
   async getOrganizationDeliveries(orgId: string) {
     const response = await this.#fetch(
-      `organizations/${orgId}/shows/deliveries`,
+      `organizations/${orgId}/shows/deliveries`, {}, "v4"
     );
     return response.json() as Promise<DeliveryApi>;
   }
