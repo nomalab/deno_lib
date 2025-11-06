@@ -374,8 +374,9 @@ export class Nomalab {
       contentType?: string;
       cookieHeader?: Record<string, string>;
     },
+    apiVersion: "v3" | "v4" | "api" = "v3",
   ): Promise<Response> {
-    return this.#fetch(partialUrl, optionalArg || {});
+    return this.#fetch(partialUrl, optionalArg || {}, apiVersion);
   }
 
   #fetch(
