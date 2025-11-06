@@ -144,17 +144,17 @@ export enum SubtitleTypeVersion {
 }
 
 export enum SegmentLabel {
-  OpeningCredits = "OpeningCredits",
-  EndingCredits = "EndingCredits",
-  Introduction = "Introduction",
-  Program = "Program",
-  Trailer = "Trailer",
-  Advertising = "Advertising",
-  TestPattern = "TestPattern",
-  Black = "Black",
-  Slate = "Slate",
-  NeutralBases = "NeutralBases",
-  CustomDelivery = "CustomDelivery",
+  OpeningCredits = "opening_credits",
+  EndingCredits = "ending_credits",
+  Introduction = "introduction",
+  Program = "program",
+  Trailer = "trailer",
+  Advertising = "advertising",
+  TestPattern = "test_pattern",
+  Black = "black",
+  Slate = "slate",
+  NeutralBases = "neutral_bases",
+  CustomDelivery = "custom_delivery",
 }
 
 export enum Version {
