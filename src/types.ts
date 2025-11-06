@@ -591,6 +591,7 @@ export interface ShowClass {
   title2: string | null;
   organization: string;
   accepted: boolean;
+  trashed: boolean;
   commandInfoXML: null;
   kind: ShowKind;
   state: State;
