@@ -1037,9 +1037,9 @@ export interface Product {
 }
 
 export enum State {
-  Active = "Active",
-  Archived = "Archived",
-  Restoring = "Restoring",
+  Active = "active",
+  Archived = "archived",
+  Restoring = "restoring",
 }
 
 export type BroadcastableProxies = {
