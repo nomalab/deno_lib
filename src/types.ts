@@ -165,6 +165,11 @@ export interface SubtitleFormatApi {
   format: string;
 }
 
+export interface SegmentationRuleApi {
+  id: string;
+  name: string;
+}
+
 export interface SubtitleFormats {
   id: string;
   name: string;
@@ -723,7 +728,7 @@ export enum TranscodeKind {
   ProxySubtitle = "proxy_subtitle",
   AudioMerge = "audio_merge",
   ProxyDcp = "proxy_dcp",
-  ProxyImf = "proxy_imf"
+  ProxyImf = "proxy_imf",
 }
 
 export enum NodeKind {

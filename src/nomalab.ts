@@ -12,6 +12,7 @@ import {
   NodeKind,
   Organization,
   Segment,
+  SegmentationRuleApi,
   Show,
   ShowClass,
   ShowKind,
@@ -351,6 +352,15 @@ export class Nomalab {
       `organizations/${orgId}/subtitleFormats`,
     );
     return response.json() as Promise<SubtitleFormatApi[]>;
+  }
+
+  async getSegmentationRules(orgId: string) {
+    const response = await this.#fetch(
+      `organizations/${orgId}/segmentationRules`,
+      {},
+      "v4",
+    );
+    return response.json() as Promise<SegmentationRuleApi[]>;
   }
 
   setAudioMapping(
