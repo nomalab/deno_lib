@@ -165,6 +165,11 @@ export interface SubtitleFormatApi {
   format: string;
 }
 
+export interface SegmentationRuleApi {
+  id: string;
+  name: string;
+}
+
 export interface SubtitleFormats {
   id: string;
   name: string;
