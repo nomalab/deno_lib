@@ -1,158 +1,158 @@
 {
   "FRA": {
     "en": "French",
-    "fr": "Français" 
+    "fr": "Français"
   },
   "ENG": {
     "en": "English",
-    "fr": "Anglais" 
+    "fr": "Anglais"
   },
   "ARA": {
     "en": "Arabic",
-    "fr": "Arabe" 
+    "fr": "Arabe"
   },
   "BUL": {
     "en": "Bulgarian",
-    "fr": "Bulgare" 
+    "fr": "Bulgare"
   },
   "CHI": {
     "en": "Chinese",
-    "fr": "Chinois" 
+    "fr": "Chinois"
   },
   "CZE": {
     "en": "Czech",
-    "fr": "Tchèque" 
+    "fr": "Tchèque"
   },
   "DAN": {
     "en": "Danish",
-    "fr": "Danois" 
+    "fr": "Danois"
   },
   "DUT": {
     "en": "Dutch",
-    "fr": "Néerlandais" 
+    "fr": "Néerlandais"
   },
   "ESP": {
     "en": "Spanish",
-    "fr": "Espagnol" 
+    "fr": "Espagnol"
   },
   "FIN": {
     "en": "Finnish",
-    "fr": "Finnois" 
+    "fr": "Finnois"
   },
   "FRE_CA": {
     "en": "French (Canada)",
-    "fr": "Français (Canada)" 
+    "fr": "Français (Canada)"
   },
   "GER": {
     "en": "German",
-    "fr": "Allemand" 
+    "fr": "Allemand"
   },
   "GLA": {
     "en": "Gaelic",
-    "fr": "Gaélique" 
+    "fr": "Gaélique"
   },
   "GRE": {
     "en": "Greek",
-    "fr": "Grec" 
+    "fr": "Grec"
   },
   "HEB": {
     "en": "Hebrew",
-    "fr": "Hébreu" 
+    "fr": "Hébreu"
   },
   "HIN": {
     "en": "Hindi",
-    "fr": "Hindi" 
+    "fr": "Hindi"
   },
   "HRV": {
     "en": "Croatian",
-    "fr": "Croate" 
+    "fr": "Croate"
   },
   "HUN": {
     "en": "Hungarian",
-    "fr": "Hongrois" 
+    "fr": "Hongrois"
   },
   "IND": {
     "en": "Indonesian",
-    "fr": "Indonésien" 
+    "fr": "Indonésien"
   },
   "ITA": {
     "en": "Italian",
-    "fr": "Italien" 
+    "fr": "Italien"
   },
   "JPN": {
     "en": "Japanese",
-    "fr": "Japonais" 
+    "fr": "Japonais"
   },
   "KOR": {
     "en": "Korean",
-    "fr": "Coréen" 
+    "fr": "Coréen"
   },
   "NLD": {
     "en": "Dutch",
-    "fr": "Néerlandais" 
+    "fr": "Néerlandais"
   },
   "NOR": {
     "en": "Norwegian",
-    "fr": "Norvégien" 
+    "fr": "Norvégien"
   },
   "POL": {
     "en": "Polish",
-    "fr": "Polonais" 
+    "fr": "Polonais"
   },
   "POR": {
     "en": "Portuguese",
-    "fr": "Portugais" 
+    "fr": "Portugais"
   },
   "POR_BR": {
     "en": "Portuguese (Brazil)",
-    "fr": "Portugais (Brésil)" 
+    "fr": "Portugais (Brésil)"
   },
   "RON": {
     "en": "Romanian",
-    "fr": "Roumain" 
+    "fr": "Roumain"
   },
   "RUS": {
     "en": "Russian",
-    "fr": "Russe" 
+    "fr": "Russe"
   },
   "SLV": {
     "en": "Slovenian",
-    "fr": "Slovène" 
+    "fr": "Slovène"
   },
   "SPA": {
     "en": "Spanish",
-    "fr": "Espagnol" 
+    "fr": "Espagnol"
   },
   "SRP": {
     "en": "Serbian",
-    "fr": "Serbe" 
+    "fr": "Serbe"
   },
   "SWE": {
     "en": "Swedish",
-    "fr": "Suédois" 
+    "fr": "Suédois"
   },
   "TAM": {
     "en": "Tamil",
-    "fr": "Tamoul" 
+    "fr": "Tamoul"
   },
   "THA": {
     "en": "Thai",
-    "fr": "Thaï" 
+    "fr": "Thaï"
   },
   "TUR": {
     "en": "Turkish",
-    "fr": "Turc" 
+    "fr": "Turc"
   },
   "UKR": {
     "en": "Ukrainian",
-    "fr": "Ukrainien" 
+    "fr": "Ukrainien"
   },
   "INT": {
     "en": "International",
-    "fr": "International" 
+    "fr": "International"
   },
   "NOTHING": {
     "en": "No language specified",
-    "fr": "Aucune langue spécifiée" 
+    "fr": "Aucune langue spécifiée"
   }
 }
