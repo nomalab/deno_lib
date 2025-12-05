@@ -2,7 +2,7 @@
   "name": "deno_lib",
   "version": "1.0.0",
   "description": "Deno lib to handle Nomalab API with deno",
-  "main": "mod.js",
+  "main": "mod.ts",
   "types": "mod.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
