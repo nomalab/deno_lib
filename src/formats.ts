@@ -1,5 +1,5 @@
-import versionsJson from "./versions.ts"
-import layoutsJson from "./layouts.ts"
+import versionsJson from "./versions.ts";
+import layoutsJson from "./layouts.ts";
 
 export const versions = versionsJson;
 export type Version = keyof (typeof versions);
