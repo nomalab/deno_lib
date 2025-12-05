@@ -1,8 +1,10 @@
-import versions from "./versions.json" with { type: "json" };
-import layouts from "./layouts.json" with { type: "json" };
+import versionsJson from "./versions.json" with { type: "json" };
+import layoutsJson from "./layouts.json" with { type: "json" };
 
+export const versions = versionsJson;
 export type Version = keyof (typeof versions);
 
+export const layouts = layoutsJson;
 export type Layout = keyof (typeof layouts);
 
 export type Format = {
