@@ -1,3 +1,10 @@
+import versions from "./versions.json" with { type: "json" };
+import layouts from "./layouts.json" with { type: "json" };
+
+export type Version = keyof (typeof versions);
+
+export type Layout = keyof (typeof layouts);
+
 export type Format = {
   id: string;
   name: string;
@@ -157,48 +164,6 @@ export enum SegmentLabel {
   CustomDelivery = "custom_delivery",
 }
 
-export enum Version {
-  ARA = "ARA",
-  BUL = "BUL",
-  CHI = "CHI",
-  CZE = "CZE",
-  DAN = "DAN",
-  DUT = "DUT",
-  ENG = "ENG",
-  ESP = "ESP",
-  FIN = "FIN",
-  FRA = "FRA",
-  FRE_CA = "FRE_CA",
-  GER = "GER",
-  GLA = "GLA",
-  GRE = "GRE",
-  HEB = "HEB",
-  HIN = "HIN",
-  HRV = "HRV",
-  HUN = "HUN",
-  IND = "IND",
-  ITA = "ITA",
-  JPN = "JPN",
-  KOR = "KOR",
-  NLD = "NLD",
-  NOR = "NOR",
-  POL = "POL",
-  POR = "POR",
-  POR_BR = "POR_BR",
-  RON = "RON",
-  RUS = "RUS",
-  SLV = "SLV",
-  SPA = "SPA",
-  SRP = "SRP",
-  SWE = "SWE",
-  TAM = "TAM",
-  THA = "THA",
-  TUR = "TUR",
-  UKR = "UKR",
-  INT = "INT",
-  NOTHING = "",
-}
-
 export enum Mapping {
   AsMaster = "AsMaster",
   NoSound = "NoSound",
@@ -213,25 +178,6 @@ export enum Mapping {
   VDVOAD = "VDVOAD",
   VDVIVONLY = "VDVIVONLY",
   VDVIMEVONLY = "VDVIMEVONLY",
-}
-
-export enum Layout {
-  Mono = "Mono",
-  DualMono = "DualMono",
-  Stereo = "Stereo",
-  StereoL = "StereoL",
-  StereoR = "StereoR",
-  FiveDotOne = "FiveDotOne",
-  FiveDotOneL = "FiveDotOneL",
-  FiveDotOneR = "FiveDotOneR",
-  FiveDotOneC = "FiveDotOneC",
-  FiveDotOneSL = "FiveDotOneSL",
-  FiveDotOneSR = "FiveDotOneSR",
-  FiveDotOneLFE = "FiveDotOneLFE",
-  SevenDotOne = "SevenDotOne",
-  OneTrack = "OneTrack",
-  OneTrackFiveOne = "OneTrack5.1",
-  OneTrackSevenOne = "OneTrack7.1",
 }
 
 export enum TypeVersion {
