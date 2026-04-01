@@ -809,6 +809,7 @@ export enum BroadcastableFileKind {
   VerificationReportPdf = "VerificationReportPdf",
   VerificationReportXml = "VerificationReportXml",
   DeepProbeReportJson = "DeepProbeReportJson",
+  SegmentationReportJson = "SegmentationReportJson",
   Video = "Video",
   Audio = "Audio",
   Subtitle = "Subtitle",
