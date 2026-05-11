@@ -189,6 +189,7 @@ export interface DeliverPayload {
   subtitles: DeliverSubtitle | null;
   targetOrg: string;
   targetId: string | null;
+  lockedUntil?: string;
 }
 export interface DeliverSubtitle {
   format: string | null;
