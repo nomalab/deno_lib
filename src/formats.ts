@@ -230,8 +230,8 @@ export enum Layout {
   FiveDotOneLFE = "FiveDotOneLFE",
   SevenDotOne = "SevenDotOne",
   OneTrack = "OneTrack",
-  OneTrackFiveOne = "OneTrack5.1",
-  OneTrackSevenOne = "OneTrack7.1",
+  OneTrackFiveOne = "OneTrackFiveOne",
+  OneTrackSevenOne = "OneTrackSevenOne",
 }
 
 export enum TypeVersion {
