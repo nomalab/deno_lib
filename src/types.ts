@@ -814,6 +814,7 @@ export enum BroadcastableFileKind {
   Video = "Video",
   Audio = "Audio",
   Subtitle = "Subtitle",
+  SubtitleObject = "SubtitleObject",
   Extra = "Extra",
   M2CWorkFile = "M2CWorkFile",
 }
