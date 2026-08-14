@@ -2,6 +2,7 @@ import * as Formats from "./formats.ts";
 
 export interface MeUser {
   admin: boolean;
+  manager?: boolean;
   avatar: string;
   disableOrganizationEmails: boolean;
   email: string;
