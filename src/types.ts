@@ -816,7 +816,9 @@ export enum BroadcastableFileKind {
   Audio = "Audio",
   Subtitle = "Subtitle",
   SubtitleObject = "SubtitleObject",
+  TranscribeSubtitle = "TranscribeSubtitle",
   Extra = "Extra",
+  Zip = "Zip",
   M2CWorkFile = "M2CWorkFile",
 }
 
